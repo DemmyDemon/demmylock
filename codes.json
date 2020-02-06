@@ -1,0 +1,12 @@
+{
+    "simeon": { 
+        "office1" : "666"
+    },
+    "mission_row": {
+        "armory" : "*66#",
+        "cell1"  : "*001",
+        "cell2"  : "*002",
+        "cell3"  : "*003",
+        "cellblock" : "*00#"
+    }
+}
