@@ -68,11 +68,8 @@ AddEventHandler ('demmylock:request-lock-state', function()
 
 end)
 
--- Technically it doesn't "reload" anything.
--- It just makes the script forget them so they are loaded again
--- the next time they are needed.
 RegisterCommand('reloadlockcodes', function(source, args, raw)
-    CODES = nil
+    CODES = loadCodes()
     if source == 0 then
         Citizen.Trace('DemmyLock codes reloaded by console.\n')
     else
