@@ -10,6 +10,7 @@
         "Cell 2"  : "*002",
         "Cell 3"  : "*003",
         "Cellblock front" : "*00#",
-        "Lobby" : "**##"
+        "Lobby" : "**##",
+        "Lobby stairs" : "1234"
     }
 }

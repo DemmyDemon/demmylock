@@ -59,6 +59,18 @@ LOCKS = {
                 {coords=vector3(434.969, -985.029, 30.503),rot=vector3(0.000, 0.000, 90.000)},
             },
         },
+        ['Lobby stairs'] = {
+            locked = true,
+            relock = 5000,
+            doors = {
+                {model=185711165,coords=vector3(446.008, -989.445, 30.839),heading=359.771},
+                {model=185711165,coords=vector3(443.408, -989.445, 30.839),heading=180.176},
+            },
+            keypads = {
+                {door=1,offset=vector3(-1.058, -0.049, -0.049),rot=vector3(0.000, -0.039, -0.044)},
+                {coords=vector3(446.418, -989.151, 30.898),rot=vector3(0.000, -0.000, 180.000)},
+            },
+        },
         ['Cell 1'] = {
             locked = true,
             relock = 5000,

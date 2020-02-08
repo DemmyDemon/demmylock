@@ -69,7 +69,24 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         else
             markerLocation = GetOffsetFromEntityInWorldCoords(keypad.object, CONFIG.indicator.offset)
         end
-        
+
+        if keypad.door and not IsEntityAttached(keypad.object) then
+            local door = data.doors[keypad.door]
+            local doorObject = GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+            AttachEntityToEntity(
+                keypad.object,
+                doorObject,
+                -1,
+                keypad.offset,
+                keypad.rot,
+                false, --p9 --[[ boolean ]], 
+                false, --useSoftPinning --[[ boolean ]], 
+                false, --collision --[[ boolean ]], 
+                false, --isPed --[[ boolean ]], 
+                0, --vertexIndex --[[ integer ]], 
+                true --fixedRot --[[ boolean ]]
+            )
+        end
 
         local keypadRotation
         if keypad.markerLocation then
