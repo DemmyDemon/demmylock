@@ -198,12 +198,8 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                         object,
                         doorObject,
                         -1,
-                        keypad.offset.x,
-                        keypad.offset.y,
-                        keypad.offset.z,
-                        keypad.rot.x,
-                        keypad.rot.y,
-                        keypad.rot.z,
+                        keypad.offset,
+                        keypad.rot,
                         false, --p9 --[[ boolean ]], 
                         false, --useSoftPinning --[[ boolean ]], 
                         false, --collision --[[ boolean ]], 
@@ -280,8 +276,8 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        local myLocation = GetEntityCoords(ped)
         local ped = PlayerPedId()
+        local myLocation = GetEntityCoords(ped)
         local isInteracting = IsKeypadShown()
         for areaName, state in pairs(inArea) do
             if state and LOCKS[areaName] then

@@ -1,6 +1,6 @@
 CENTERS = {
-    ['Car dealership'] = vector3(-42.239, -1099.789, 25.422),
-    ['Mission row'] = vector3(452.550, -986.191, 25.674),
+    --['Car dealership'] = vector3(-42.239, -1099.789, 25.422),
+    --['Mission row'] = vector3(452.550, -986.191, 25.674),
 }
 LOCKS = {
     ['Car dealership'] = {
@@ -10,8 +10,18 @@ LOCKS = {
                 {model=-2051651622,coords=vector3(-33.810, -1107.579, 26.572),heading=70.000},
             },
             keypads = {
-                {coords=vector3(-33.839, -1107.366, 27.059),rot=vector3(0.000, -0.000, -110.000)},
-                {coords=vector3(-34.264, -1109.120, 26.977),rot=vector3(0.013, -0.009, 70.057)},
+                {door=1,offset=vector3(-1.159, -0.050, 0.068),rot=vector3(0.000, -0.000, 0.000)},
+                {door=1,offset=vector3(-1.147, 0.050, 0.073),rot=vector3(-0.000, -0.000, -180.000)},
+            },
+        },
+        ['Sales office'] = {
+            locked = true,
+            doors = {
+                {model=-2051651622,coords=vector3(-31.724, -1101.847, 26.572),heading=70.000},
+            },
+            keypads = {
+                {door=1,offset=vector3(-1.150, 0.050, 0.065),rot=vector3(-0.000, -0.000, -180.000)},
+                {door=1,offset=vector3(-1.151, -0.050, 0.069),rot=vector3(0.000, -0.000, 0.000)},
             },
         },
         ['Front door'] = {
@@ -92,3 +102,22 @@ LOCKS = {
         },
     },
 }
+for locationName, locationData in pairs(LOCKS) do
+    local center = vector3(0,0,0)
+    local doorCount = 0
+    for lockName, lockData in pairs(locationData) do
+        if lockData.doors then
+            for _, door in pairs(lockData.doors) do
+                doorCount = doorCount + 1
+                center = center + door.coords
+            end
+        end
+    end
+    center = center / doorCount
+    if CENTERS[locationName] then
+        local distance = #(CENTERS[locationName] - center)
+        Citizen.Trace(locationName..' center is off by '..distance..' meters\n')
+    else
+        CENTERS[locationName] = center
+    end
+end

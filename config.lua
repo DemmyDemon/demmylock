@@ -12,7 +12,7 @@ CONFIG = {
     },
     closeSpeed = 200.0,
     range = {
-        area = 100.0,
+        area = 75.0,
         interact = 0.7,
     },
 }
