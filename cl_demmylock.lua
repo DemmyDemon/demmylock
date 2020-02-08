@@ -3,8 +3,8 @@ local ped = PlayerPedId()
 local lastKey
 local gotLockState = false
 
-AddTextEntry('DEMMYLOCK_INTERACT', '~INPUT_CONTEXT~ Keypad')
-AddTextEntry('DEMMYLOCK_REUSE', '~INPUT_CONTEXT~ Reuse key ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Keypad')
+AddTextEntry('DEMMYLOCK_INTERACT', '~a~~n~~INPUT_CONTEXT~ Keypad')
+AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Reuse key ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Keypad')
 
 function withModel(hash, callback)
     if not HasModelLoaded(hash) then
@@ -39,6 +39,7 @@ end
 
 function handleLock(pedLocation, areaName, lockName, data, isInteracting)
     local r,g,b,a = table.unpack(CONFIG.indicator.color.locked)
+    local busy = false
     if data.locked then
         for _,doorData in ipairs(data.doors) do
             local door = GetClosestObjectOfType(doorData.coords, 0.5, doorData.model, false, false, false)
@@ -51,14 +52,37 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
             local door = GetClosestObjectOfType(doorData.coords, 0.5, doorData.model, false, false, false)
             FreezeEntityPosition(door, false)
         end
-        r,g,b,a = table.unpack(CONFIG.indicator.color.open)
+
+        if data.relock then
+            r,g,b,a = table.unpack(CONFIG.indicator.color.busy)
+            busy = true
+        else
+            r,g,b,a = table.unpack(CONFIG.indicator.color.open)
+        end
     end
+
     for _,keypad in ipairs(data.keypads) do
+
+        local markerLocation
+        if keypad.markerLocation then
+            markerLocation = keypad.markerLocation
+        else
+            markerLocation = GetOffsetFromEntityInWorldCoords(keypad.object, CONFIG.indicator.offset)
+        end
+        
+
+        local keypadRotation
+        if keypad.markerLocation then
+            keypadRotation = keypad.rot
+        else
+            keypadRotation = GetEntityRotation(keypad.object, 2)
+        end
+
         DrawMarker(
             CONFIG.indicator.type,
-            keypad.markerLocation,
+            markerLocation,
             0.0, 0.0, 0.0, -- Direction
-            keypad.rot,
+            keypadRotation,
             CONFIG.indicator.scale.x,
             CONFIG.indicator.scale.y,
             CONFIG.indicator.scale.z,
@@ -70,7 +94,15 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
             0, 0, -- Texture
             false -- Project
         )
-        if not isInteracting and #(keypad.coords - pedLocation) < CONFIG.range.interact then
+
+        local keypadLocation
+        if keypad.coords then
+            keypadLocation = keypad.coords
+        else
+            keypadLocation = GetEntityCoords(keypad.object,false)
+        end
+
+        if not busy and not isInteracting and #(keypadLocation - pedLocation) < CONFIG.range.interact then
             
             isInteracting = true
 
@@ -86,6 +118,7 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
             else
                 BeginTextCommandDisplayHelp('DEMMYLOCK_INTERACT')
             end
+            AddTextComponentSubstringPlayerName(lockName)
             EndTextCommandDisplayHelp(0, false, false, 0)
 
             if IsControlJustPressed(0, 51) then
@@ -144,10 +177,51 @@ AddEventHandler('demmylock:enter-area', function(areaName)
     withModel(CONFIG.keypad, function()
         for doorName, doorData in pairs(LOCKS[areaName]) do
             for _, keypad in ipairs(doorData.keypads) do
-                local object = CreateObjectNoOffset(CONFIG.keypad, keypad.coords, false, false, false)
-                SetEntityRotation(object, keypad.rot, 2, true)
-                if not keypad.markerLocation then
-                    keypad.markerLocation = GetOffsetFromEntityInWorldCoords(object, CONFIG.indicator.offset)
+                local object
+                if keypad.door then
+                    local door = doorData.doors[keypad.door]
+                    local doorObject = GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+                    if not DoesEntityExist(doorObject) then
+                        Citizen.Trace('Failed to locate door\n')
+                    else
+                        Citizen.Trace('Found door\n')
+                    end
+                    object = CreateObjectNoOffset(CONFIG.keypad, door.coords + keypad.offset, false, false, false)
+                    
+                    if not DoesEntityExist(object) then
+                        Citizen.Trace('Failed to create object\n')
+                    else
+                        Citizen.Trace('Created object\n')
+                    end
+
+                    AttachEntityToEntity(
+                        object,
+                        doorObject,
+                        -1,
+                        keypad.offset.x,
+                        keypad.offset.y,
+                        keypad.offset.z,
+                        keypad.rot.x,
+                        keypad.rot.y,
+                        keypad.rot.z,
+                        false, --p9 --[[ boolean ]], 
+                        false, --useSoftPinning --[[ boolean ]], 
+                        false, --collision --[[ boolean ]], 
+                        false, --isPed --[[ boolean ]], 
+                        0, --vertexIndex --[[ integer ]], 
+                        true --fixedRot --[[ boolean ]]
+                    )
+                    if IsEntityAttached(object) then
+                        Citizen.Trace('Attacment happened\n')
+                    else
+                        Citizen.Trace('Attachment failed\n')
+                    end
+                else
+                    object = CreateObjectNoOffset(CONFIG.keypad, keypad.coords, false, false, false)
+                    SetEntityRotation(object, keypad.rot, 2, true)
+                    if not keypad.markerLocation then
+                        keypad.markerLocation = GetOffsetFromEntityInWorldCoords(object, CONFIG.indicator.offset)
+                    end
                 end
                 keypad.object = object
             end

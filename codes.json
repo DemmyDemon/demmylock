@@ -1,12 +1,14 @@
 {
-    "simeon": { 
-        "office1" : "666"
+    "Car dealership": { 
+        "Boss office" : "666",
+        "Front door" : "666"
     },
-    "mission_row": {
-        "armory" : "*66#",
-        "cell1"  : "*001",
-        "cell2"  : "*002",
-        "cell3"  : "*003",
-        "cellblock" : "*00#"
+    "Mission row": {
+        "Armory" : "*66#",
+        "Cell 1"  : "*001",
+        "Cell 2"  : "*002",
+        "Cell 3"  : "*003",
+        "Cellblock front" : "*00#",
+        "Lobby" : "**##"
     }
 }

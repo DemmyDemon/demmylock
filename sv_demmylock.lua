@@ -26,20 +26,20 @@ AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
         LOCKS[area][lock].locked = locked
         if locked then
             TriggerClientEvent('demmylock:lock', -1, area, lock)
-            Citizen.Trace(source..'/'..GetPlayerName(source)..' locked '..area..'/'..lock..'\n')
+            Citizen.Trace(source..'/'..GetPlayerName(source)..' locked '..area..' '..lock..'\n')
         else
             if LOCKS[area][lock].relock then
                 LOCKS[area][lock].timer = SetTimeout(LOCKS[area][lock].relock, function()
                     if not LOCKS[area][lock].locked then
                         lockStateCache = nil
                         LOCKS[area][lock].locked = true
-                        Citizen.Trace(area..'/'..lock..' was automatically relocked\n')
+                        Citizen.Trace(area..' '..lock..' was automatically relocked\n')
                         TriggerClientEvent('demmylock:lock', -1, area, lock)
                     end
                 end)
             end
             TriggerClientEvent('demmylock:unlock', -1, area, lock)
-            Citizen.Trace(source..'/'..GetPlayerName(source)..' unlocked '..area..'/'..lock..'\n')
+            Citizen.Trace(source..'/'..GetPlayerName(source)..' unlocked '..area..' '..lock..'\n')
         end
     else
         TriggerClientEvent('demmylock:wrong-code', source, area, lock)
