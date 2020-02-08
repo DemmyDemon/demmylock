@@ -40,6 +40,7 @@ end
 function handleLock(pedLocation, areaName, lockName, data, isInteracting)
     local r,g,b,a = table.unpack(CONFIG.indicator.color.locked)
     local busy = false
+
     if data.locked then
         for _,doorData in ipairs(data.doors) do
             local door = GetClosestObjectOfType(doorData.coords, 0.5, doorData.model, false, false, false)
@@ -197,37 +198,23 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                 local object
                 if keypad.door then
                     local door = doorData.doors[keypad.door]
-                    local doorObject = GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
-                    if not DoesEntityExist(doorObject) then
-                        Citizen.Trace('Failed to locate door\n')
-                    else
-                        Citizen.Trace('Found door\n')
-                    end
                     object = CreateObjectNoOffset(CONFIG.keypad, door.coords + keypad.offset, false, false, false)
                     
-                    if not DoesEntityExist(object) then
-                        Citizen.Trace('Failed to create object\n')
-                    else
-                        Citizen.Trace('Created object\n')
-                    end
-
-                    AttachEntityToEntity(
-                        object,
-                        doorObject,
-                        -1,
-                        keypad.offset,
-                        keypad.rot,
-                        false, --p9 --[[ boolean ]], 
-                        false, --useSoftPinning --[[ boolean ]], 
-                        false, --collision --[[ boolean ]], 
-                        false, --isPed --[[ boolean ]], 
-                        0, --vertexIndex --[[ integer ]], 
-                        true --fixedRot --[[ boolean ]]
-                    )
-                    if IsEntityAttached(object) then
-                        Citizen.Trace('Attacment happened\n')
-                    else
-                        Citizen.Trace('Attachment failed\n')
+                    local doorObject = GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+                    if DoesEntityExist(doorObject) then
+                        AttachEntityToEntity(
+                            object,
+                            doorObject,
+                            -1,
+                            keypad.offset,
+                            keypad.rot,
+                            false, --p9 --[[ boolean ]],
+                            false, --useSoftPinning --[[ boolean ]],
+                            false, --collision --[[ boolean ]],
+                            false, --isPed --[[ boolean ]],
+                            0, --vertexIndex --[[ integer ]],
+                            true --fixedRot --[[ boolean ]]
+                        )
                     end
                 else
                     object = CreateObjectNoOffset(CONFIG.keypad, keypad.coords, false, false, false)
@@ -277,12 +264,10 @@ Citizen.CreateThread(function()
             if #( myLocation - center ) < CONFIG.range.area then
                 if not inArea[areaName] then
                     TriggerEvent('demmylock:enter-area', areaName)
-                    Citizen.Trace('Entered area '..areaName.."\n")
                     inArea[areaName] = true
                 end
             elseif inArea[areaName] then
                 TriggerEvent('demmylock:exit-area', areaName)
-                Citizen.Trace('Left area '..areaName.."\n")
                 inArea[areaName] = nil
             end
             Citizen.Wait(0)

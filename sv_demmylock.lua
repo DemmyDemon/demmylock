@@ -50,7 +50,7 @@ local lockStateCache = nil
 RegisterNetEvent('demmylock:request-lock-state')
 AddEventHandler ('demmylock:request-lock-state', function()
     local source = source
-    Citizen.Trace(source..'/'..GetPlayerName(source)..' requests lock state\n')
+    -- Citizen.Trace(source..'/'..GetPlayerName(source)..' requests lock state\n')
     if lockStateCache then
         TriggerClientEvent('demmylock:lock-state',source, lockStateCache)
         return
