@@ -19,7 +19,25 @@ function withModel(hash, callback)
     end
 end
 
+local enableProfiling = false
+local OrigProfilerEnterScope = ProfilerEnterScope
+local OrigProfilerExitScope = ProfilerExitScope
+
+function ProfilerEnterScope(scope)
+    if enableProfiling then
+        OrigProfilerEnterScope(scope)
+    end
+end
+function ProfilerEnterScope()
+    if enableProfiling then
+        OrigProfilerExitScope()
+    end
+end
+
+
 function adjustDoorAngle(target, current)
+    ProfilerEnterScope('demmylock:adjustDoorAngle')
+
     local diff = current - target
     local set = target
     
@@ -33,25 +51,43 @@ function adjustDoorAngle(target, current)
         set = current + CONFIG.closeSpeed * GetFrameTime()
     end
 
+    ProfilerExitScope()
     return set
 
 end
 
+function getDoorObject(doorData)
+    ProfilerEnterScope('demmylock:getDoorObject')
+    if not doorData.doorObject or not DoesEntityExist(doorData.doorObject) then
+        local candidate = GetClosestObjectOfType(doorData.coords, 0.5, doorData.model, false, false, false)
+        if DoesEntityExist(candidate) then
+            doorData.doorObject = candidate
+        end
+    end
+    ProfilerExitScope()
+    return doorData.doorObject
+end
+
 function handleLock(pedLocation, areaName, lockName, data, isInteracting)
+    ProfilerEnterScope('demmylock:handleLock')
     local r,g,b,a = table.unpack(CONFIG.indicator.color.locked)
     local busy = false
 
     if data.locked then
+        ProfilerEnterScope('demmylock:handleLock:locked')
         for _,doorData in ipairs(data.doors) do
-            local door = GetClosestObjectOfType(doorData.coords, 0.5, doorData.model, false, false, false)
-            FreezeEntityPosition(door, true)
+            local door = getDoorObject(doorData)
             local doorAngle = GetEntityHeading(door)
-            SetEntityHeading(door, adjustDoorAngle(doorData.heading, doorAngle))
+            if doorAngle ~= doorData.heading then
+                FreezeEntityPosition(door, true)
+                SetEntityHeading(door, adjustDoorAngle(doorData.heading, doorAngle))
+            end
         end
+        ProfilerExitScope()
     else
+        ProfilerEnterScope('demmylock:handleLock:unlocked')
         for _,doorData in ipairs(data.doors) do
-            local door = GetClosestObjectOfType(doorData.coords, 0.5, doorData.model, false, false, false)
-            FreezeEntityPosition(door, false)
+            FreezeEntityPosition(getDoorObject(doorData), false)
         end
 
         if data.relock then
@@ -60,10 +96,11 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         else
             r,g,b,a = table.unpack(CONFIG.indicator.color.open)
         end
+        ProfilerExitScope()
     end
 
     for _,keypad in ipairs(data.keypads) do
-
+        ProfilerEnterScope('demmylock:handleLock:keypads')
         local markerLocation
         if keypad.markerLocation then
             markerLocation = keypad.markerLocation
@@ -72,8 +109,10 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         end
 
         if keypad.door and not IsEntityAttached(keypad.object) then
+            ProfilerEnterScope('demmylock:handleLock:keypads:notAttached')
             local door = data.doors[keypad.door]
-            local doorObject = GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+            local doorObject = getDoorObject(door)
+
             AttachEntityToEntity(
                 keypad.object,
                 doorObject,
@@ -87,6 +126,7 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                 0, --vertexIndex --[[ integer ]], 
                 true --fixedRot --[[ boolean ]]
             )
+            ProfilerExitScope()
         end
 
         local keypadRotation
@@ -121,7 +161,7 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         end
 
         if not busy and not isInteracting and #(keypadLocation - pedLocation) < CONFIG.range.interact then
-            
+            ProfilerEnterScope('demmylock:handleLocks:interact')
             isInteracting = true
 
             if not lastKey then
@@ -145,13 +185,14 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                 else
                     ShowKeypad(areaName, lockName, lastKey, not data.locked)
                 end
-            else
-
             end
+            ProfilerExitScope()
         elseif lastKey then
             lastKey = nil
         end
+        ProfilerExitScope()
     end
+    ProfilerExitScope()
     return isInteracting
 end
 
@@ -200,7 +241,7 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                     local door = doorData.doors[keypad.door]
                     object = CreateObjectNoOffset(CONFIG.keypad, door.coords + keypad.offset, false, false, false)
                     
-                    local doorObject = GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+                    local doorObject = getDoorObject(door) --GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
                     if DoesEntityExist(doorObject) then
                         AttachEntityToEntity(
                             object,
@@ -234,6 +275,9 @@ AddEventHandler('demmylock:exit-area', function(areaName)
         for _, keypad in ipairs(doorData.keypads) do
             DeleteObject(keypad.object)
             keypad.object = nil
+        end
+        for _, door in ipairs(doorData) do
+            door.doorObject = nil
         end
     end
 end)
