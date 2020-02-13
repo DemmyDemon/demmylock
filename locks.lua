@@ -1,7 +1,3 @@
-CENTERS = {
-    --['Car dealership'] = vector3(-42.239, -1099.789, 25.422),
-    --['Mission row'] = vector3(452.550, -986.191, 25.674),
-}
 LOCKS = {
     ['Car dealership'] = {
         ['Boss office'] = {
@@ -137,22 +133,52 @@ LOCKS = {
         },
     },
 }
+CENTERS = {}
 for locationName, locationData in pairs(LOCKS) do
     local center = vector3(0,0,0)
-    local doorCount = 0
+    local itemCount = 0
     for lockName, lockData in pairs(locationData) do
         if lockData.doors then
             for _, door in pairs(lockData.doors) do
-                doorCount = doorCount + 1
+                itemCount = itemCount + 1
                 center = center + door.coords
             end
         end
+        if lockData.keypads then
+            for _, keypad in pairs(lockData.keypads) do
+                if keypad.coords then
+                    itemCount = itemCount + 1
+                    center = center + keypad.coords
+                end
+            end
+        end
     end
-    center = center / doorCount
-    if CENTERS[locationName] then
-        local distance = #(CENTERS[locationName] - center)
-        Citizen.Trace(locationName..' center is off by '..distance..' meters\n')
-    else
-        CENTERS[locationName] = center
+    center = center / itemCount
+    CENTERS[locationName] = center
+end
+SIZES = {}
+for locationName, locationData in pairs(LOCKS) do
+    local maxDistance = 0
+    for lockName, lockData in pairs(locationData) do
+        if lockData.doors then
+            for _, door in pairs(lockData.doors) do
+                local distance = #( door.coords - CENTERS[locationName] )
+                if distance > maxDistance then
+                    maxDistance = distance
+                end
+            end
+        end
+        if lockData.keypads then
+            for _, keypad in pairs(lockData.keypads) do
+                if keypad.coords then
+                    local distance = #( keypad.coords - CENTERS[locationName] )
+                    if distance > maxDistance then
+                        maxDistance = distance
+                    end
+                end
+            end
+        end
     end
+    -- Citizen.Trace(string.format("Max distance for %s is %0.2f\n", locationName, maxDistance))
+    SIZES[locationName] = maxDistance + CONFIG.range.areaMargin
 end

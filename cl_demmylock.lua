@@ -2,7 +2,7 @@ local inArea = {}
 local ped = PlayerPedId()
 local lastKey
 local gotLockState = false
-
+local DEBUGAREAS = false
 AddTextEntry('DEMMYLOCK_INTERACT', '~a~~n~~INPUT_CONTEXT~ Keypad')
 AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Reuse key ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Keypad')
 
@@ -357,7 +357,24 @@ Citizen.CreateThread(function()
         end
         local myLocation = GetFinalRenderedCamCoord()
         for areaName, center in pairs(CENTERS) do
-            if #( myLocation - center ) < CONFIG.range.area then
+            if DEBUGAREAS then
+                DrawMarker(
+                    28,
+                    center,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    SIZES[areaName],
+                    SIZES[areaName],
+                    SIZES[areaName],
+                    255, 128, 0, 200,
+                    false, false, 2, 0, 0, false
+                )
+            end
+            if #( myLocation - center ) < (SIZES[areaName] or 0) then
                 if not inArea[areaName] then
                     TriggerEvent('demmylock:enter-area', areaName)
                     inArea[areaName] = true
@@ -366,9 +383,15 @@ Citizen.CreateThread(function()
                 TriggerEvent('demmylock:exit-area', areaName)
                 inArea[areaName] = nil
             end
-            Citizen.Wait(0)
+            if not DEBUGAREAS then
+                Citizen.Wait(0)
+            end
         end
-        Citizen.Wait(1000)
+        if DEBUGAREAS then
+            Citizen.Wait(0)
+        else
+            Citizen.Wait(100)
+        end
     end
 end)
 
