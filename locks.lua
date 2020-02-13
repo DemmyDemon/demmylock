@@ -25,7 +25,7 @@ LOCKS = {
             },
         },
         ['Front door'] = {
-            locked = false,
+            locked = true,
             doors = {
                 {model=2059227086,coords=vector3(-39.134, -1108.218, 26.720),heading=340.000},
                 {model=1417577297,coords=vector3(-37.331, -1108.873, 26.720),heading=340.000},   
@@ -33,6 +33,29 @@ LOCKS = {
             keypads = {
                 {door=1,offset=vector3(0.84, 0.1, 0.034),rot=vector3(0.000, 0.000, 180.000)},
                 {door=2,offset=vector3(-0.84, -0.1, 0.031),rot=vector3(0.000, 0.000, 0.000)},
+            },
+        },
+        ['Side door'] = {
+            locked = true,
+            doors = {
+                {model=1417577297,coords=vector3(-60.546, -1094.749, 26.889),heading=250.047},
+                {model=2059227086,coords=vector3(-59.893, -1092.952, 26.884),heading=250.154},
+            },
+            keypads = {
+                {door=2,offset=vector3(0.841, 0.105, 0.036),rot=vector3(-0.000, 0.000, 179.955)},
+                {door=1,offset=vector3(-0.840, -0.104, 0.044),rot=vector3(-0.000, -0.000, -0.052)},
+            },
+        },
+        ['Back gate'] = {
+            locked = true,
+            entitySets = {
+                interior = vector3(-30.0, -1090.0, 26.0),
+                open = {'shutter_open'},
+                locked = {'shutter_closed'},
+            },
+            keypads = {
+                {coords=vector3(-31.993, -1085.766, 26.852),rot=vector3(0.000, -0.000, -20.241)},
+                {coords=vector3(-31.788, -1085.540, 26.860),rot=vector3(0.000, -0.000, 69.679)},
             },
         }
     },

@@ -2,7 +2,9 @@
     "Car dealership": { 
         "Boss office" : "666",
         "Front door" : "666",
-        "Sales office" : "666"
+        "Sales office" : "666",
+        "Side door" : "666",
+        "Back gate" : "666"
     },
     "Mission row": {
         "Armory" : "*66#",

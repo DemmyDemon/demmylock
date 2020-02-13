@@ -75,19 +75,70 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
 
     if data.locked then
         ProfilerEnterScope('demmylock:handleLock:locked')
-        for _,doorData in ipairs(data.doors) do
-            local door = getDoorObject(doorData)
-            local doorAngle = GetEntityHeading(door)
-            if doorAngle ~= doorData.heading then
-                FreezeEntityPosition(door, true)
-                SetEntityHeading(door, adjustDoorAngle(doorData.heading, doorAngle))
+        if data.doors then
+            for _,doorData in ipairs(data.doors) do
+                local door = getDoorObject(doorData)
+                local doorAngle = GetEntityHeading(door)
+                if doorAngle ~= doorData.heading then
+                    FreezeEntityPosition(door, true)
+                    SetEntityHeading(door, adjustDoorAngle(doorData.heading, doorAngle))
+                end
+            end
+        end
+        if data.entitySets then
+            local refresh = false
+            local interior = GetInteriorAtCoords(data.entitySets.interior)
+            if data.entitySets.open then
+                for _, name in ipairs(data.entitySets.open) do
+                    if IsInteriorEntitySetActive(interior, name) then
+                        DeactivateInteriorEntitySet(interior, name)
+                        refresh = true
+                    end
+                end
+            end
+            if data.entitySets.locked then
+                for _, name in ipairs(data.entitySets.locked) do
+                    if not IsInteriorEntitySetActive(interior, name) then
+                        ActivateInteriorEntitySet(interior, name)
+                        refresh = true
+                    end
+                end
+            end
+            if refresh then
+                RefreshInterior(interior)
             end
         end
         ProfilerExitScope()
     else
         ProfilerEnterScope('demmylock:handleLock:unlocked')
-        for _,doorData in ipairs(data.doors) do
-            FreezeEntityPosition(getDoorObject(doorData), false)
+        if data.doors then
+            for _,doorData in ipairs(data.doors) do
+                FreezeEntityPosition(getDoorObject(doorData), false)
+            end
+        end
+
+        if data.entitySets then
+            local refresh = false
+            local interior = GetInteriorAtCoords(data.entitySets.interior)
+            if data.entitySets.open then
+                for _, name in ipairs(data.entitySets.open) do
+                    if not IsInteriorEntitySetActive(interior, name) then
+                        ActivateInteriorEntitySet(interior, name)
+                        refresh = true
+                    end
+                end
+            end
+            if data.entitySets.locked then
+                for _, name in ipairs(data.entitySets.locked) do
+                    if IsInteriorEntitySetActive(interior, name) then
+                        DeactivateInteriorEntitySet(interior, name)
+                        refresh = true
+                    end
+                end
+            end
+            if refresh then
+                RefreshInterior(interior)
+            end
         end
 
         if data.relock then
