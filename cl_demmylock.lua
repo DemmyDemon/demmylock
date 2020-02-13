@@ -163,20 +163,21 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
             ProfilerEnterScope('demmylock:handleLock:keypads:notAttached')
             local door = data.doors[keypad.door]
             local doorObject = getDoorObject(door)
-
-            AttachEntityToEntity(
-                keypad.object,
-                doorObject,
-                -1,
-                keypad.offset,
-                keypad.rot,
-                false, --p9 --[[ boolean ]], 
-                false, --useSoftPinning --[[ boolean ]], 
-                false, --collision --[[ boolean ]], 
-                false, --isPed --[[ boolean ]], 
-                0, --vertexIndex --[[ integer ]], 
-                true --fixedRot --[[ boolean ]]
-            )
+            if DoesEntityExist(doorObject) then
+                AttachEntityToEntity(
+                    keypad.object,
+                    doorObject,
+                    -1,
+                    keypad.offset,
+                    keypad.rot,
+                    false, --p9 --[[ boolean ]],
+                    false, --useSoftPinning --[[ boolean ]],
+                    false, --collision --[[ boolean ]],
+                    false, --isPed --[[ boolean ]],
+                    0, --vertexIndex --[[ integer ]],
+                    true --fixedRot --[[ boolean ]]
+                )
+            end
             ProfilerExitScope()
         end
 
