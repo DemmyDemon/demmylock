@@ -1,4 +1,27 @@
 LOCKS = {
+    ['Rooftop'] = {
+        ['Elevator access'] = {
+            locked = true,
+            teleport = {
+                {coords=vector3(-39.115, -1082.494, 26.422),heading=-114.0,ipl='shr_int'},
+                {coords=vector3(15.885, -1032.378, 29.431),heading=-160.0},
+            },
+            keypads = {
+                {coords=vector3(4.300, -1000.386, 86.236),rot=vector3(0.000, -0.001, 159.522)},
+            },
+        },
+    },
+    ['Alley'] = {
+        ['Elevator'] = {
+            locked = true,
+            teleport = {
+                {coords=vector3(3.713, -999.454, 86.035),heading=-20.0},
+            },
+            keypads = {
+                {coords=vector3(15.296, -1031.674, 29.731),rot=vector3(0.000, 0.000, -20.00)},
+            },
+        },
+    },
     ['Car dealership'] = {
         ['Boss office'] = {
             locked = true,
@@ -50,10 +73,19 @@ LOCKS = {
                 locked = {'shutter_closed'},
             },
             keypads = {
-                {coords=vector3(-31.993, -1085.766, 26.852),rot=vector3(0.000, -0.000, -20.241)},
+                {coords=vector3(-31.993, -1085.766, 26.860),rot=vector3(0.000, -0.000, -20.241)},
                 {coords=vector3(-31.788, -1085.540, 26.860),rot=vector3(0.000, -0.000, 69.679)},
             },
-        }
+        },
+        ['Magic door'] = {
+            locked = true,
+            teleport = {
+                {coords=vector3(3.713, -999.454, 86.035),heading=-20.0},
+            },
+            keypads = {
+                {coords=vector3(-39.837, -1082.702, 26.730),rot=vector3(0.000, 0.000, 70.000)},
+            },
+        },
     },
     ['Mission row'] = {
         ['Armory'] = {
@@ -129,6 +161,24 @@ LOCKS = {
             keypads = {
                 {door=1,offset=vector3(-1.157, 0.053, 0.011),rot=vector3(0.000, -0.002, 180.042)},
                 {door=1,offset=vector3(-1.161, -0.054, 0.003),rot=vector3(-0.000, 0.000, 0.041)},
+            },
+        },
+        ['Backdoor'] = {
+            locked = true,
+            teleport = {
+                {coords=vector3(452.113, -988.510, 26.674),heading=0.0},
+            },
+            keypads = {
+                {coords=vector3(453.191, -993.336, 26.502),rot=vector3(0.000, -0.000, -0.000)},
+            },
+        },
+        ['Garage'] = {
+            locked = true,
+            teleport = {
+                {coords=vector3(452.434, -993.848, 26.004),heading=180.0},
+            },
+            keypads = {
+                {coords=vector3(451.824, -988.983, 26.910),rot=vector3(0.000, -0.000, 180.000)},
             },
         },
     },

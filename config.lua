@@ -8,9 +8,12 @@ CONFIG = {
             locked = {255, 0, 0, 255},
             open = {0, 255, 0, 255},
             busy = {255, 255, 0, 255},
+            magic = {200, 00, 255, 255},
         },
     },
+    teleportTime = 5000,
     closeSpeed = 200.0,
+    fadeTime = 300,
     range = {
         areaMargin = 20.0,
         interact = 0.7,

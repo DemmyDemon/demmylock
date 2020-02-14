@@ -5,6 +5,7 @@ local gotLockState = false
 local DEBUGAREAS = false
 AddTextEntry('DEMMYLOCK_INTERACT', '~a~~n~~INPUT_CONTEXT~ Keypad')
 AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Reuse key ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Keypad')
+AddTextEntry('DEMMYLOCK_TELEPORT', '~a~~n~~INPUT_CONTEXT~ Step through')
 
 function withModel(hash, callback)
     if not HasModelLoaded(hash) then
@@ -144,6 +145,9 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         if data.relock then
             r,g,b,a = table.unpack(CONFIG.indicator.color.busy)
             busy = true
+        elseif data.teleport then
+            r,g,b,a = table.unpack(CONFIG.indicator.color.magic)
+            busy = true
         else
             r,g,b,a = table.unpack(CONFIG.indicator.color.open)
         end
@@ -212,33 +216,63 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
             keypadLocation = GetEntityCoords(keypad.object,false)
         end
 
-        if not busy and not isInteracting and #(keypadLocation - pedLocation) < CONFIG.range.interact then
-            ProfilerEnterScope('demmylock:handleLocks:interact')
-            isInteracting = true
+        if not isInteracting and #(keypadLocation - pedLocation) < CONFIG.range.interact then
+            if not busy then
+                ProfilerEnterScope('demmylock:handleLocks:interact')
+                isInteracting = true
 
-            if not lastKey then
-                lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
                 if not lastKey then
-                    lastKey = ''
+                    lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
+                    if not lastKey then
+                        lastKey = ''
+                    end
                 end
-            end
 
-            if lastKey and string.len(lastKey) > 0 then
-                BeginTextCommandDisplayHelp('DEMMYLOCK_REUSE')
-            else
-                BeginTextCommandDisplayHelp('DEMMYLOCK_INTERACT')
-            end
-            AddTextComponentSubstringPlayerName(lockName)
-            EndTextCommandDisplayHelp(0, false, false, 0)
-
-            if IsControlJustPressed(0, 51) then
-                if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 21) then
-                    TriggerServerEvent('demmylock:entered-pin', areaName, lockName, lastKey, not data.locked)
+                if lastKey and string.len(lastKey) > 0 then
+                    BeginTextCommandDisplayHelp('DEMMYLOCK_REUSE')
                 else
-                    ShowKeypad(areaName, lockName, lastKey, not data.locked)
+                    BeginTextCommandDisplayHelp('DEMMYLOCK_INTERACT')
+                end
+                AddTextComponentSubstringPlayerName(lockName)
+                EndTextCommandDisplayHelp(0, false, false, 0)
+
+                if IsControlJustPressed(0, 51) then
+                    if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 21) then
+                        TriggerServerEvent('demmylock:entered-pin', areaName, lockName, lastKey, not data.locked)
+                    else
+                        ShowKeypad(areaName, lockName, lastKey, not data.locked)
+                    end
+                end
+                ProfilerExitScope()
+            elseif data.teleport and data.destination and data.teleport[data.destination] then
+                local target = data.teleport[data.destination]
+                BeginTextCommandDisplayHelp('DEMMYLOCK_TELEPORT')
+                AddTextComponentSubstringPlayerName(lockName)
+                EndTextCommandDisplayHelp(0, false, false, 0)
+                if IsControlJustPressed(0, 51) then
+                    DoScreenFadeOut(CONFIG.fadeTime)
+                    local ped = PlayerPedId()
+                    Citizen.Trace('Teleporting to '..tostring(target.coords)..'\n')
+                    if target.ipl then
+                        if not IsIplActive(target.ipl) then
+                            RequestIpl(target.ipl)
+                            while not IsIplActive(target.ipl) do
+                                Citizen.Wait(0)
+                            end
+                        end
+                    end
+                    while not IsScreenFadedOut() do
+                        Citizen.Wait(0)
+                    end
+                    local camHeading = GetGameplayCamRelativeHeading()
+                    local camPitch = GetGameplayCamRelativePitch()
+                    SetEntityCoordsNoOffset(ped, target.coords, false, false, false)
+                    SetEntityHeading(ped, target.heading)
+                    SetGameplayCamRelativeHeading(camHeading)
+                    SetGameplayCamRelativePitch(camPitch, 1.0)
+                    DoScreenFadeIn(CONFIG.fadeTime)
                 end
             end
-            ProfilerExitScope()
         elseif lastKey then
             lastKey = nil
         end
@@ -252,15 +286,17 @@ RegisterNetEvent('demmylock:lock')
 AddEventHandler ('demmylock:lock', function(areaName, lockName)
     if LOCKS[areaName] and LOCKS[areaName][lockName] then
         LOCKS[areaName][lockName].locked = true
+        LOCKS[areaName][lockName].destination = null
     else
         Citizen.Trace('Lock could not find lock '..tostring(areaName)..'/'..tostring(lockName))
     end
 end)
 
 RegisterNetEvent('demmylock:unlock')
-AddEventHandler ('demmylock:unlock', function(areaName, lockName)
+AddEventHandler ('demmylock:unlock', function(areaName, lockName, destination)
     if LOCKS[areaName] and LOCKS[areaName][lockName] then
         LOCKS[areaName][lockName].locked = false
+        LOCKS[areaName][lockName].destination = destination
     else
         Citizen.Trace('Unlock could not find lock '..tostring(areaName)..'/'..tostring(lockName))
     end

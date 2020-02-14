@@ -16,30 +16,62 @@ function verifyPin(area, lock, pin)
     end
 
 end
+function matchDestination(area, lock, pin)
+    if not CODES then
+        CODES = loadCodes()
+    end
+    if CODES and CODES[area] and CODES[area][lock] then
+        for destination,code in ipairs(CODES[area][lock]) do
+            if pin == code then
+                return destination
+            end
+        end
+    end
+end
 RegisterNetEvent('demmylock:entered-pin')
 AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
     local source = source
-    if LOCKS[area] and LOCKS[area][lock] and verifyPin(area, lock, pin) then
-        
-        lockStateCache = nil -- void lock cache because we're changing the lock state!
-        
-        LOCKS[area][lock].locked = locked
-        if locked then
-            TriggerClientEvent('demmylock:lock', -1, area, lock)
-            Citizen.Trace(source..'/'..GetPlayerName(source)..' locked '..area..' '..lock..'\n')
-        else
-            if LOCKS[area][lock].relock then
-                LOCKS[area][lock].timer = SetTimeout(LOCKS[area][lock].relock, function()
-                    if not LOCKS[area][lock].locked then
-                        lockStateCache = nil
-                        LOCKS[area][lock].locked = true
-                        Citizen.Trace(area..' '..lock..' was automatically relocked\n')
-                        TriggerClientEvent('demmylock:lock', -1, area, lock)
-                    end
-                end)
+    if LOCKS[area] and LOCKS[area][lock] then
+        local lockData = LOCKS[area][lock]
+
+        if lockData.teleport then
+
+            local destination = matchDestination(area, lock, pin)
+            if destination then
+                TriggerClientEvent('demmylock:unlock', -1, area, lock, destination)
+                Citizen.Trace(source..'/'..GetPlayerName(source)..' opened a magic portal from '..area..' '..lock..' to destination '..destination..'\n')
+            else
+                TriggerClientEvent('demmylock:wrong-code', source, area, lock)
             end
-            TriggerClientEvent('demmylock:unlock', -1, area, lock)
-            Citizen.Trace(source..'/'..GetPlayerName(source)..' unlocked '..area..' '..lock..'\n')
+            SetTimeout(CONFIG.teleportTime, function()
+                TriggerClientEvent('demmylock:lock', -1, area, lock)
+                Citizen.Trace('The magic portal from '..area..' '..lock..' has closed.\n')
+            end)
+
+        elseif verifyPin(area, lock, pin) then
+
+            lockStateCache = nil -- void lock cache because we're changing the lock state!
+
+            lockData.locked = locked
+            if locked then
+                TriggerClientEvent('demmylock:lock', -1, area, lock)
+                Citizen.Trace(source..'/'..GetPlayerName(source)..' locked '..area..' '..lock..'\n')
+            else
+                if lockData.relock then
+                    SetTimeout(LOCKS[area][lock].relock, function()
+                        if not lockData.locked then
+                            lockStateCache = nil
+                            lockData.locked = true
+                            Citizen.Trace(area..' '..lock..' was automatically relocked\n')
+                            TriggerClientEvent('demmylock:lock', -1, area, lock)
+                        end
+                    end)
+                end
+                TriggerClientEvent('demmylock:unlock', -1, area, lock)
+                Citizen.Trace(source..'/'..GetPlayerName(source)..' unlocked '..area..' '..lock..'\n')
+            end
+        else
+            TriggerClientEvent('demmylock:wrong-code', source, area, lock)
         end
     else
         TriggerClientEvent('demmylock:wrong-code', source, area, lock)

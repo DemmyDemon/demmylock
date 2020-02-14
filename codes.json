@@ -4,7 +4,8 @@
         "Front door" : "666",
         "Sales office" : "666",
         "Side door" : "666",
-        "Back gate" : "666"
+        "Back gate" : "666",
+        "Magic door" : ["1234"]
     },
     "Mission row": {
         "Armory" : "*66#",
@@ -13,6 +14,14 @@
         "Cell 3"  : "*003",
         "Cellblock front" : "*00#",
         "Lobby" : "**##",
-        "Lobby stairs" : "1234"
+        "Lobby stairs" : "1234",
+        "Backdoor" : ["1234"],
+        "Garage" : ["1234"]
+    },
+    "Rooftop": {
+        "Elevator access": ["1234", "2468"]
+    },
+    "Alley": {
+        "Elevator" : ["2468"]
     }
 }
