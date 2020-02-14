@@ -1,27 +1,23 @@
 {
-    "Car dealership": { 
-        "Boss office" : "666",
-        "Front door" : "666",
-        "Sales office" : "666",
-        "Side door" : "666",
-        "Back gate" : "666",
-        "Magic door" : ["1234"]
+    "Sjukhuset A": {
+        "Avdelning A" : "112#",
+        "Labratorium" : "112#",
+        "Operation 1" : "112#",
+        "Operation 2" : "112#",
+        "Operation 3" : "112#",
+        "Intensivavdelning" : "112#"
     },
-    "Mission row": {
-        "Armory" : "*66#",
-        "Cell 1"  : "*001",
-        "Cell 2"  : "*002",
-        "Cell 3"  : "*003",
-        "Cellblock front" : "*00#",
-        "Lobby" : "**##",
-        "Lobby stairs" : "1234",
-        "Backdoor" : ["1234"],
-        "Garage" : ["1234"]
+    "Sjukhuset B": {
+        "Avdelning A" : "112#",
+        "Avdelning B" : "112#",
+        "Avdelning C" : "112#",
+        "MRI" : "112#",
+        "Diagnosrum" : "112#",
+        "Runtgen" : "112#",
+        "Administration" : "112#"
     },
-    "Rooftop": {
-        "Elevator access": ["1234", "2468"]
-    },
-    "Alley": {
-        "Elevator" : ["2468"]
+    "Sjukhuset Lobby": {
+        "Reception" : "112#",
+        "Pausrum" : "112#"
     }
 }

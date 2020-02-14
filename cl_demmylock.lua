@@ -3,9 +3,9 @@ local ped = PlayerPedId()
 local lastKey
 local gotLockState = false
 local DEBUGAREAS = false
-AddTextEntry('DEMMYLOCK_INTERACT', '~a~~n~~INPUT_CONTEXT~ Keypad')
-AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Reuse key ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Keypad')
-AddTextEntry('DEMMYLOCK_TELEPORT', '~a~~n~~INPUT_CONTEXT~ Step through')
+AddTextEntry('DEMMYLOCK_INTERACT', '~a~~n~~INPUT_CONTEXT~ Ange kod')
+AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Upprepa kod ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Ange kod')
+AddTextEntry('DEMMYLOCK_TELEPORT', '~a~~n~~INPUT_CONTEXT~ Kliv igenom')
 
 function withModel(hash, callback)
     if not HasModelLoaded(hash) then

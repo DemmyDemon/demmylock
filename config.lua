@@ -16,6 +16,6 @@ CONFIG = {
     fadeTime = 300,
     range = {
         areaMargin = 20.0,
-        interact = 0.7,
+        interact = 1.0,
     },
 }

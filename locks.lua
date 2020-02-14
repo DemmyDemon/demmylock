@@ -1,184 +1,165 @@
 LOCKS = {
-    ['Rooftop'] = {
-        ['Elevator access'] = {
+    ['Sjukhuset A'] = {
+        ['Avdelning A'] = {
             locked = true,
-            teleport = {
-                {coords=vector3(-39.115, -1082.494, 26.422),heading=-114.0,ipl='shr_int'},
-                {coords=vector3(15.885, -1032.378, 29.431),heading=-160.0},
+            doors = {
+                {model=-434783486,coords=vector3(302.803, -581.425, 43.434),heading=340.0},
+                {model=-1700911976,coords=vector3(305.222, -582.306, 43.434),heading=340.0},
             },
             keypads = {
-                {coords=vector3(4.300, -1000.386, 86.236),rot=vector3(0.000, -0.001, 159.522)},
+                {coords=vector3(305.381, -582.484, 43.622),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(302.619, -581.243, 43.625),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Labratorium'] = {
+            locked = true,
+            doors = {
+                {model=854291622,coords=vector3(307.118, -569.569, 43.434),heading=339.906},
+            },
+            keypads = {
+                {coords=vector3(308.534, -570.200, 43.628),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(308.625, -570.0, 43.47),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Operation 1'] = {
+            locked = true,
+            doors = {
+                {model=-1700911976,coords=vector3(314.424, -572.222, 43.434),heading=340.158},
+                {model=-434783486,coords=vector3(312.005, -571.341, 43.434),heading=339.811},
+            },
+            keypads = {
+                {coords=vector3(311.744, -571.368, 43.653),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(314.710, -572.210, 43.47),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Operation 2'] = {
+            locked = true,
+            doors = {
+                {model=-434783486,coords=vector3(317.843, -573.466, 43.434),heading=340.000},
+                {model=-1700911976,coords=vector3(320.262, -574.346, 43.434),heading=340.000},
+            },
+            keypads = {
+                {coords=vector3(320.447, -574.535, 43.629),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(320.542, -574.333, 43.468),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Operation 3'] = {
+            locked = true,
+            doors = {
+                {model=-434783486,coords=vector3(323.238, -575.429, 43.434),heading=339.914},
+                {model=-1700911976,coords=vector3(325.657, -576.310, 43.434),heading=340.000},
+            },
+            keypads = {
+                {coords=vector3(322.997, -575.464, 43.640),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(325.892, -576.280, 43.47),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Intensivavdelning'] = {
+            locked = true,
+            doors = {
+                {model=-434783486,coords=vector3(318.485, -579.228, 43.434),heading=160.029},
+                {model=-1700911976,coords=vector3(316.066, -578.348, 43.434),heading=159.991},
+            },
+            keypads = {
+                {coords=vector3(315.859, -578.157, 43.512),rot=vector3(0.000, -0.000, 160.000)},
+                {coords=vector3(315.817, -578.374, 43.458),rot=vector3(0.000, -0.000, -20.000)},
             },
         },
     },
-    ['Alley'] = {
-        ['Elevator'] = {
+    ['Sjukhuset B'] = {
+        ['Avdelning A'] = {
             locked = true,
-            teleport = {
-                {coords=vector3(3.713, -999.454, 86.035),heading=-20.0},
+            doors = {
+                {model=-1700911976,coords=vector3(325.669, -580.460, 43.434),heading=250.064},
+                {model=-434783486,coords=vector3(326.550, -578.041, 43.434),heading=249.869},
             },
             keypads = {
-                {coords=vector3(15.296, -1031.674, 29.731),rot=vector3(0.000, 0.000, -20.00)},
+                {coords=vector3(325.489, -580.633, 43.622),rot=vector3(0.000, -0.000, -110.000)},
+                {coords=vector3(325.706, -580.689, 43.622),rot=vector3(0.000, 0.000, 70.000)},
+            },
+        },
+        ['Avdelning B'] = {
+            locked = true,
+            doors = {
+                {model=-434783486,coords=vector3(324.236, -589.226, 43.434),heading=340.0},
+                {model=-1700911976,coords=vector3(326.655, -590.107, 43.434),heading=340.0},
+            },
+            keypads = {
+                {coords=vector3(326.828, -590.287, 43.47),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(326.925, -590.099, 43.47),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['MRI'] = {
+            locked = true,
+            doors = {
+                {model=854291622,coords=vector3(336.163, -580.140, 43.434),heading=340.219},
+            },
+            keypads = {
+                {coords=vector3(337.621, -580.786, 43.650),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(337.642, -580.566, 43.481),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Diagnosrum'] = {
+            locked = true,
+            doors = {
+                {model=854291622,coords=vector3(340.782, -581.821, 43.434),heading=340.135},
+            },
+            keypads = {
+                {coords=vector3(342.230, -582.464, 43.650),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(342.258, -582.246, 43.481),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Runtgen'] = {
+            locked = true,
+            doors = {
+                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
+            },
+            keypads = {
+                {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
+                {coords=vector3(348.308, -584.448, 43.481),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Administration'] = {
+            locked = true,
+            doors = {
+                {model=854291622,coords=vector3(339.005, -586.703, 43.434),heading=340.079},
+            },
+            keypads = {
+                {coords=vector3(340.531, -587.132, 43.650),rot=vector3(0.000, -0.000, 160.000)},
+                {coords=vector3(340.387, -587.323, 43.454),rot=vector3(0.000, -0.000, -20.000)},
+            },
+        },
+        ['Avdelning C'] = {
+            locked = true,
+            doors = {
+                {model=-434783486,coords=vector3(349.314, -586.326, 43.434),heading=250.0},
+                {model=-1700911976,coords=vector3(348.433, -588.745, 43.434),heading=250.0},
+            },
+            keypads = {
+                {coords=vector3(348.442, -589.020, 43.45),rot=vector3(0.000, 0.000, 70.000)},
+                {coords=vector3(348.250, -588.943, 43.45),rot=vector3(0.000, -0.000, -110.000)},
             },
         },
     },
-    ['Car dealership'] = {
-        ['Boss office'] = {
+    ['Sjukhuset Lobby'] = {
+        ['Reception'] = {
             locked = true,
             doors = {
-                {model=-2051651622,coords=vector3(-33.810, -1107.579, 26.572),heading=70.000},
+                {model=854291622,coords=vector3(313.480, -595.458, 43.434),heading=250.0},
             },
             keypads = {
-                {door=1,offset=vector3(-1.159, -0.050, 0.068),rot=vector3(0.000, -0.000, 0.000)},
-                {door=1,offset=vector3(-1.147, 0.050, 0.073),rot=vector3(-0.000, -0.000, -180.000)},
-            },
-        },
-        ['Sales office'] = {
-            locked = true,
-            doors = {
-                {model=-2051651622,coords=vector3(-31.724, -1101.847, 26.572),heading=70.000},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.150, 0.050, 0.065),rot=vector3(-0.000, -0.000, -180.000)},
-                {door=1,offset=vector3(-1.151, -0.050, 0.069),rot=vector3(0.000, -0.000, 0.000)},
-            },
-        },
-        ['Front door'] = {
-            locked = true,
-            doors = {
-                {model=2059227086,coords=vector3(-39.134, -1108.218, 26.720),heading=340.000},
-                {model=1417577297,coords=vector3(-37.331, -1108.873, 26.720),heading=340.000},   
-            },
-            keypads = {
-                {door=1,offset=vector3(0.84, 0.1, 0.034),rot=vector3(0.000, 0.000, 180.000)},
-                {door=2,offset=vector3(-0.84, -0.1, 0.031),rot=vector3(0.000, 0.000, 0.000)},
-            },
-        },
-        ['Side door'] = {
-            locked = true,
-            doors = {
-                {model=1417577297,coords=vector3(-60.546, -1094.749, 26.889),heading=250.047},
-                {model=2059227086,coords=vector3(-59.893, -1092.952, 26.884),heading=250.154},
-            },
-            keypads = {
-                {door=2,offset=vector3(0.841, 0.105, 0.036),rot=vector3(-0.000, 0.000, 179.955)},
-                {door=1,offset=vector3(-0.840, -0.104, 0.044),rot=vector3(-0.000, -0.000, -0.052)},
-            },
-        },
-        ['Back gate'] = {
-            locked = true,
-            entitySets = {
-                interior = vector3(-30.0, -1090.0, 26.0),
-                open = {'shutter_open'},
-                locked = {'shutter_closed'},
-            },
-            keypads = {
-                {coords=vector3(-31.993, -1085.766, 26.860),rot=vector3(0.000, -0.000, -20.241)},
-                {coords=vector3(-31.788, -1085.540, 26.860),rot=vector3(0.000, -0.000, 69.679)},
-            },
-        },
-        ['Magic door'] = {
-            locked = true,
-            teleport = {
-                {coords=vector3(3.713, -999.454, 86.035),heading=-20.0},
-            },
-            keypads = {
-                {coords=vector3(-39.837, -1082.702, 26.730),rot=vector3(0.000, 0.000, 70.000)},
-            },
-        },
-    },
-    ['Mission row'] = {
-        ['Armory'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=749848321,coords=vector3(453.079, -983.190, 30.839),heading=270.000},
-            },
-            keypads = {
-                {coords=vector3(452.916, -981.756, 31.032),rot=vector3(-0.000, -0.000, -90.000)},
-                {coords=vector3(453.243, -981.664, 30.911),rot=vector3(0.000, 0.000, 90.000)},
+                {coords=vector3(313.055, -596.960, 43.623),rot=vector3(0.000, 0.000, 70.000)},
+                {coords=vector3(312.858, -596.886, 43.448),rot=vector3(0.000, -0.000, -110.000)},
             }
         },
-        ['Lobby'] = {
-            locked = false,
+        ['Pausrum'] = {
+            locked = true,
             doors = {
-                {model=-1215222675,coords=vector3(434.748, -980.618, 30.839),heading=270.000},
-                {model=320433149,coords=vector3(434.748, -983.215, 30.839),heading=270.000},
+                {model=854291622,coords=vector3(309.134, -597.751, 43.434),heading=160.0},
             },
             keypads = {
-                {coords=vector3(434.190, -984.979, 31.005),rot=vector3(0.000, 0.000, -90.000)},
-                {coords=vector3(434.969, -985.029, 30.503),rot=vector3(0.000, 0.000, 90.000)},
-            },
-        },
-        ['Lobby stairs'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=185711165,coords=vector3(446.008, -989.445, 30.839),heading=359.771},
-                {model=185711165,coords=vector3(443.408, -989.445, 30.839),heading=180.176},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.058, -0.049, -0.049),rot=vector3(0.000, -0.039, -0.044)},
-                {coords=vector3(446.418, -989.151, 30.898),rot=vector3(0.000, -0.000, 180.000)},
-            },
-        },
-        ['Cell 1'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=631614199,coords=vector3(461.807, -994.409, 25.064),heading=270.000},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.116, 0.054, 0.017),rot=vector3(0.000, 0.000, 180.000)},
-            },
-        },
-        ['Cell 2'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=631614199,coords=vector3(461.806, -997.658, 25.064),heading=90.000},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.113, -0.054, 0.004),rot=vector3(0.000, 0.000, 0.000)},
-            },
-        },
-        ['Cell 3'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=631614199,coords=vector3(461.807, -1001.302, 25.064),heading=90.000},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.112, -0.054, 0.004),rot=vector3(0.000, 0.000, 0.000)},
-            },
-        },
-        ['Cellblock front'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=631614199,coords=vector3(464.570, -992.664, 25.064),heading=359.727},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.157, 0.053, 0.011),rot=vector3(0.000, -0.002, 180.042)},
-                {door=1,offset=vector3(-1.161, -0.054, 0.003),rot=vector3(-0.000, 0.000, 0.041)},
-            },
-        },
-        ['Backdoor'] = {
-            locked = true,
-            teleport = {
-                {coords=vector3(452.113, -988.510, 26.674),heading=0.0},
-            },
-            keypads = {
-                {coords=vector3(453.191, -993.336, 26.502),rot=vector3(0.000, -0.000, -0.000)},
-            },
-        },
-        ['Garage'] = {
-            locked = true,
-            teleport = {
-                {coords=vector3(452.434, -993.848, 26.004),heading=180.0},
-            },
-            keypads = {
-                {coords=vector3(451.824, -988.983, 26.910),rot=vector3(0.000, -0.000, 180.000)},
+                {coords=vector3(307.745, -597.125, 43.619),rot=vector3(0.000, -0.000, 160.000)},
+                {coords=vector3(307.639, -597.315, 43.421),rot=vector3(0.000, -0.000, -20.000)},
             },
         },
     },
