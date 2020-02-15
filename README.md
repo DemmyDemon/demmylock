@@ -45,7 +45,7 @@ The numbers, as well as `*` and `#`, can be entered as part of the code.
 
 When a code is entered, it is stored on the client as the code for that door. That means you don't have to enter the code again the next time you use that door, and a different prompt is shown for the helptext. This is useful for everyone, but especially for streamers. It means you only have to hide the code *the first time you enter it*, and then you can re-use that code for as long as it's valid.
 
-If the server responds with "Na-ah, that's the wrong code!", that code is forgotten for ever.
+If the server responds with "Na-ah, that's the wrong code!", that code is forgotten for ever, and you will have to enter a new code the next time you want to open that lock.
 
 ## Lock states ##
 
