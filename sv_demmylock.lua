@@ -40,12 +40,16 @@ AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
 
             local destination = matchDestination(area, lock, pin)
             if destination then
+                lockStateCache = nil -- void lock cache because we're changing the lock state!
+                lockData.locked = false
                 TriggerClientEvent('demmylock:unlock', -1, area, lock, destination)
                 Citizen.Trace(source..'/'..GetPlayerName(source)..' opened a magic portal from '..area..' '..lock..' to destination '..destination..'\n')
             else
                 TriggerClientEvent('demmylock:wrong-code', source, area, lock)
             end
             SetTimeout(CONFIG.teleportTime, function()
+                lockStateCache = nil -- void lock cache because we're changing the lock state!
+                lockData.locked = true
                 TriggerClientEvent('demmylock:lock', -1, area, lock)
                 Citizen.Trace('The magic portal from '..area..' '..lock..' has closed.\n')
             end)
