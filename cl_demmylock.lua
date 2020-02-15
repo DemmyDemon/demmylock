@@ -222,7 +222,11 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                 isInteracting = true
 
                 if not lastKey then
-                    lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
+                    if data.groupcode then
+                        lastKey = GetResourceKvpString('demmylock:'..areaName)
+                    else
+                        lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
+                    end
                     if not lastKey then
                         lastKey = ''
                     end
@@ -304,7 +308,13 @@ end)
 
 RegisterNetEvent('demmylock:wrong-code')
 AddEventHandler ('demmylock:wrong-code', function(areaName, lockName)
-    DeleteResourceKvp('demmylock:'..areaName..':'..lockName)
+    if LOCKS[areaName] and LOCKS[areaName][lockName] then
+        if LOCKS[areaName][lockName].groupcode then
+            DeleteResourceKvp('demmylock:'..areaName)
+        else
+            DeleteResourceKvp('demmylock:'..areaName..':'..lockName)
+        end
+    end
     lastKey = nil
 end)
 

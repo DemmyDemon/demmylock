@@ -2,6 +2,7 @@ LOCKS = {
     ['Sjukhuset A'] = {
         ['Avdelning A'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-434783486,coords=vector3(302.803, -581.425, 43.434),heading=340.0},
                 {model=-1700911976,coords=vector3(305.222, -582.306, 43.434),heading=340.0},
@@ -13,6 +14,7 @@ LOCKS = {
         },
         ['Labratorium'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(307.118, -569.569, 43.434),heading=339.906},
             },
@@ -23,6 +25,7 @@ LOCKS = {
         },
         ['Operation 1'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-1700911976,coords=vector3(314.424, -572.222, 43.434),heading=340.158},
                 {model=-434783486,coords=vector3(312.005, -571.341, 43.434),heading=339.811},
@@ -34,6 +37,7 @@ LOCKS = {
         },
         ['Operation 2'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-434783486,coords=vector3(317.843, -573.466, 43.434),heading=340.000},
                 {model=-1700911976,coords=vector3(320.262, -574.346, 43.434),heading=340.000},
@@ -45,6 +49,7 @@ LOCKS = {
         },
         ['Operation 3'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-434783486,coords=vector3(323.238, -575.429, 43.434),heading=339.914},
                 {model=-1700911976,coords=vector3(325.657, -576.310, 43.434),heading=340.000},
@@ -56,6 +61,7 @@ LOCKS = {
         },
         ['Intensivavdelning'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-434783486,coords=vector3(318.485, -579.228, 43.434),heading=160.029},
                 {model=-1700911976,coords=vector3(316.066, -578.348, 43.434),heading=159.991},
@@ -69,6 +75,7 @@ LOCKS = {
     ['Sjukhuset B'] = {
         ['Avdelning A'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-1700911976,coords=vector3(325.669, -580.460, 43.434),heading=250.064},
                 {model=-434783486,coords=vector3(326.550, -578.041, 43.434),heading=249.869},
@@ -80,6 +87,7 @@ LOCKS = {
         },
         ['Avdelning B'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-434783486,coords=vector3(324.236, -589.226, 43.434),heading=340.0},
                 {model=-1700911976,coords=vector3(326.655, -590.107, 43.434),heading=340.0},
@@ -91,6 +99,7 @@ LOCKS = {
         },
         ['MRI'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(336.163, -580.140, 43.434),heading=340.219},
             },
@@ -101,6 +110,7 @@ LOCKS = {
         },
         ['Diagnosrum'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(340.782, -581.821, 43.434),heading=340.135},
             },
@@ -111,6 +121,7 @@ LOCKS = {
         },
         ['Runtgen'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
             },
@@ -121,6 +132,7 @@ LOCKS = {
         },
         ['Administration'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(339.005, -586.703, 43.434),heading=340.079},
             },
@@ -131,6 +143,7 @@ LOCKS = {
         },
         ['Avdelning C'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=-434783486,coords=vector3(349.314, -586.326, 43.434),heading=250.0},
                 {model=-1700911976,coords=vector3(348.433, -588.745, 43.434),heading=250.0},
@@ -144,6 +157,7 @@ LOCKS = {
     ['Sjukhuset Lobby'] = {
         ['Reception'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(313.480, -595.458, 43.434),heading=250.0},
             },
@@ -154,6 +168,7 @@ LOCKS = {
         },
         ['Pausrum'] = {
             locked = true,
+            groupcode = true,
             doors = {
                 {model=854291622,coords=vector3(309.134, -597.751, 43.434),heading=160.0},
             },

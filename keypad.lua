@@ -203,13 +203,25 @@ function ShowKeypad(area, door, lastKey, nextState)
                         code = result
                         code = string.sub(code,-4)
                     elseif (type(result) == 'boolean') then
-                        SetResourceKvp('demmylock:'..area..':'..door, code)
+                        if LOCKS[area] and LOCKS[area][door] then
+                            if LOCKS[area][door].groupcode then
+                                SetResourceKvp('demmylock:'..area, code)
+                            else
+                                SetResourceKvp('demmylock:'..area..':'..door, code)
+                            end
+                        end
                         TriggerServerEvent('demmylock:entered-pin', area, door, code, not result)
                         visible = false
                     end
                 end
             elseif IsDisabledControlJustPressed(0, 51) then
-                SetResourceKvp('demmylock:'..area..':'..door, code)
+                if LOCKS[area] and LOCKS[area][door] then
+                    if LOCKS[area][door].groupcode then
+                        SetResourceKvp('demmylock:'..area, code)
+                    else
+                        SetResourceKvp('demmylock:'..area..':'..door, code)
+                    end
+                end
                 TriggerServerEvent('demmylock:entered-pin', area, door, code, nextState)
                 visible = false
             end

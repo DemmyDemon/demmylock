@@ -13,6 +13,8 @@ function verifyPin(area, lock, pin)
 
     if CODES and CODES[area] and CODES[area][lock] then
         return (pin == CODES[area][lock])
+    elseif CODES and CODES[area] and CODES[area]._default then
+        return (pin == CODES[area]._default)
     end
 
 end

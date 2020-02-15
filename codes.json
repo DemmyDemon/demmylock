@@ -1,23 +1,11 @@
 {
     "Sjukhuset A": {
-        "Avdelning A" : "112#",
-        "Labratorium" : "112#",
-        "Operation 1" : "112#",
-        "Operation 2" : "112#",
-        "Operation 3" : "112#",
-        "Intensivavdelning" : "112#"
+        "_default" : "112#"
     },
     "Sjukhuset B": {
-        "Avdelning A" : "112#",
-        "Avdelning B" : "112#",
-        "Avdelning C" : "112#",
-        "MRI" : "112#",
-        "Diagnosrum" : "112#",
-        "Runtgen" : "112#",
-        "Administration" : "112#"
+        "_default" : "112#"
     },
     "Sjukhuset Lobby": {
-        "Reception" : "112#",
-        "Pausrum" : "112#"
+        "_default" : "112#"
     }
 }
