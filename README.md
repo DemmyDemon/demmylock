@@ -196,6 +196,29 @@ LOCKS = {
 ```
 Of course, that number can be anything you want. It is not possible to lock the door prematurely, so very long relock times are not recommended.
 
+### Propped open
+
+Sometimes it's not enough to just have the door be unlocked. You want it to be actually propped open! To do this, simply add the angle you want it twisted to when it's unlocked, like so:
+
+```lua
+LOCKS = {
+    ['Example'] = {
+        ['Simple lock'] = {
+            locked = true,
+            relock = 5000,
+            doors = {
+                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.2, open=73.4},
+            },
+            keypads = {
+                {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.0, 0.0, -20.0)},
+            },
+        },
+    },
+}
+```
+
+Of course, this works with different angles in a double door set. The door becomes just as frozen as it is when it was locked, but in that new angle.
+
 ### Teleporters
 
 A type of lock that *has no doors at all!* It's just a keypad on a wall, though it's probably best for immersion that it's placed next to what *looks like* a door. There are a million of these around the map. For example, the door I used in my indicator demonstration is not actually a door, it is a wall that is textured to look like a door.

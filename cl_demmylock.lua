@@ -119,7 +119,16 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         ProfilerEnterScope('demmylock:handleLock:unlocked')
         if data.doors then
             for _,doorData in ipairs(data.doors) do
-                FreezeEntityPosition(getDoorObject(doorData), false)
+                if doorData.open then
+                    local door = getDoorObject(doorData)
+                    local doorAngle = GetEntityHeading(door)
+                    if doorAngle ~= doorData.open then
+                        FreezeEntityPosition(doorObject, true)
+                        SetEntityHeading(door, adjustDoorAngle(doorData.open, doorAngle))
+                    end
+                else
+                    FreezeEntityPosition(getDoorObject(doorData), false)
+                end
             end
         end
 
@@ -159,133 +168,135 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         ProfilerExitScope()
     end
 
-    for _,keypad in ipairs(data.keypads) do
-        ProfilerEnterScope('demmylock:handleLock:keypads')
-        local markerLocation
-        if keypad.markerLocation then
-            markerLocation = keypad.markerLocation
-        else
-            markerLocation = GetOffsetFromEntityInWorldCoords(keypad.object, CONFIG.indicator.offset)
-        end
+    if data.keypads then
+        for _,keypad in ipairs(data.keypads) do
+            ProfilerEnterScope('demmylock:handleLock:keypads')
+            local markerLocation
+            if keypad.markerLocation then
+                markerLocation = keypad.markerLocation
+            else
+                markerLocation = GetOffsetFromEntityInWorldCoords(keypad.object, CONFIG.indicator.offset)
+            end
 
-        if keypad.door and not IsEntityAttached(keypad.object) then
-            ProfilerEnterScope('demmylock:handleLock:keypads:notAttached')
-            local door = data.doors[keypad.door]
-            local doorObject = getDoorObject(door)
-            if DoesEntityExist(doorObject) then
-                AttachEntityToEntity(
-                    keypad.object,
-                    doorObject,
-                    -1,
-                    keypad.offset,
-                    keypad.rot,
-                    false, --p9 --[[ boolean ]],
-                    false, --useSoftPinning --[[ boolean ]],
-                    false, --collision --[[ boolean ]],
-                    false, --isPed --[[ boolean ]],
-                    0, --vertexIndex --[[ integer ]],
-                    true --fixedRot --[[ boolean ]]
-                )
+            if keypad.door and not IsEntityAttached(keypad.object) then
+                ProfilerEnterScope('demmylock:handleLock:keypads:notAttached')
+                local door = data.doors[keypad.door]
+                local doorObject = getDoorObject(door)
+                if DoesEntityExist(doorObject) then
+                    AttachEntityToEntity(
+                        keypad.object,
+                        doorObject,
+                        -1,
+                        keypad.offset,
+                        keypad.rot,
+                        false, --p9 --[[ boolean ]],
+                        false, --useSoftPinning --[[ boolean ]],
+                        false, --collision --[[ boolean ]],
+                        false, --isPed --[[ boolean ]],
+                        0, --vertexIndex --[[ integer ]],
+                        true --fixedRot --[[ boolean ]]
+                    )
+                end
+                ProfilerExitScope()
+            end
+
+            local keypadRotation
+            if keypad.markerLocation then
+                keypadRotation = keypad.rot
+            else
+                keypadRotation = GetEntityRotation(keypad.object, 2)
+            end
+
+            DrawMarker(
+                CONFIG.indicator.type,
+                markerLocation,
+                0.0, 0.0, 0.0, -- Direction
+                keypadRotation,
+                CONFIG.indicator.scale.x,
+                CONFIG.indicator.scale.y,
+                CONFIG.indicator.scale.z,
+                r, g, b, a,
+                false, -- bob
+                false, -- face camera
+                2, -- Cargo cult. Rotation order?
+                false, -- rotate
+                0, 0, -- Texture
+                false -- Project
+            )
+
+            local keypadLocation
+            if keypad.coords then
+                keypadLocation = keypad.coords
+            else
+                keypadLocation = GetEntityCoords(keypad.object,false)
+            end
+
+            if not isInteracting and #(keypadLocation - pedLocation) < CONFIG.range.interact then
+                if not busy then
+                    ProfilerEnterScope('demmylock:handleLocks:interact')
+                    isInteracting = true
+
+                    if not lastKey then
+                        if data.groupcode then
+                            lastKey = GetResourceKvpString('demmylock:'..areaName)
+                        else
+                            lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
+                        end
+                        if not lastKey then
+                            lastKey = ''
+                        end
+                    end
+
+                    if lastKey and string.len(lastKey) > 0 then
+                        BeginTextCommandDisplayHelp('DEMMYLOCK_REUSE')
+                    else
+                        BeginTextCommandDisplayHelp('DEMMYLOCK_INTERACT')
+                    end
+                    AddTextComponentSubstringPlayerName(lockName)
+                    EndTextCommandDisplayHelp(0, false, false, 0)
+
+                    if IsControlJustPressed(0, 51) then
+                        if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 21) then
+                            TriggerServerEvent('demmylock:entered-pin', areaName, lockName, lastKey, not data.locked)
+                        else
+                            ShowKeypad(areaName, lockName, lastKey, not data.locked)
+                        end
+                    end
+                    ProfilerExitScope()
+                elseif data.teleport and data.destination and data.teleport[data.destination] then
+                    local target = data.teleport[data.destination]
+                    BeginTextCommandDisplayHelp('DEMMYLOCK_TELEPORT')
+                    AddTextComponentSubstringPlayerName(lockName)
+                    EndTextCommandDisplayHelp(0, false, false, 0)
+                    if IsControlJustPressed(0, 51) then
+                        DoScreenFadeOut(CONFIG.fadeTime)
+                        local ped = PlayerPedId()
+                        Citizen.Trace('Teleporting to '..tostring(target.coords)..'\n')
+                        if target.ipl then
+                            if not IsIplActive(target.ipl) then
+                                RequestIpl(target.ipl)
+                                while not IsIplActive(target.ipl) do
+                                    Citizen.Wait(0)
+                                end
+                            end
+                        end
+                        while not IsScreenFadedOut() do
+                            Citizen.Wait(0)
+                        end
+                        local camHeading = GetGameplayCamRelativeHeading()
+                        local camPitch = GetGameplayCamRelativePitch()
+                        SetEntityCoordsNoOffset(ped, target.coords, false, false, false)
+                        SetEntityHeading(ped, target.heading)
+                        SetGameplayCamRelativeHeading(camHeading)
+                        SetGameplayCamRelativePitch(camPitch, 1.0)
+                        DoScreenFadeIn(CONFIG.fadeTime)
+                    end
+                end
+            elseif lastKey then
+                lastKey = nil
             end
             ProfilerExitScope()
         end
-
-        local keypadRotation
-        if keypad.markerLocation then
-            keypadRotation = keypad.rot
-        else
-            keypadRotation = GetEntityRotation(keypad.object, 2)
-        end
-
-        DrawMarker(
-            CONFIG.indicator.type,
-            markerLocation,
-            0.0, 0.0, 0.0, -- Direction
-            keypadRotation,
-            CONFIG.indicator.scale.x,
-            CONFIG.indicator.scale.y,
-            CONFIG.indicator.scale.z,
-            r, g, b, a,
-            false, -- bob
-            false, -- face camera
-            2, -- Cargo cult. Rotation order?
-            false, -- rotate
-            0, 0, -- Texture
-            false -- Project
-        )
-
-        local keypadLocation
-        if keypad.coords then
-            keypadLocation = keypad.coords
-        else
-            keypadLocation = GetEntityCoords(keypad.object,false)
-        end
-
-        if not isInteracting and #(keypadLocation - pedLocation) < CONFIG.range.interact then
-            if not busy then
-                ProfilerEnterScope('demmylock:handleLocks:interact')
-                isInteracting = true
-
-                if not lastKey then
-                    if data.groupcode then
-                        lastKey = GetResourceKvpString('demmylock:'..areaName)
-                    else
-                        lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
-                    end
-                    if not lastKey then
-                        lastKey = ''
-                    end
-                end
-
-                if lastKey and string.len(lastKey) > 0 then
-                    BeginTextCommandDisplayHelp('DEMMYLOCK_REUSE')
-                else
-                    BeginTextCommandDisplayHelp('DEMMYLOCK_INTERACT')
-                end
-                AddTextComponentSubstringPlayerName(lockName)
-                EndTextCommandDisplayHelp(0, false, false, 0)
-
-                if IsControlJustPressed(0, 51) then
-                    if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 21) then
-                        TriggerServerEvent('demmylock:entered-pin', areaName, lockName, lastKey, not data.locked)
-                    else
-                        ShowKeypad(areaName, lockName, lastKey, not data.locked)
-                    end
-                end
-                ProfilerExitScope()
-            elseif data.teleport and data.destination and data.teleport[data.destination] then
-                local target = data.teleport[data.destination]
-                BeginTextCommandDisplayHelp('DEMMYLOCK_TELEPORT')
-                AddTextComponentSubstringPlayerName(lockName)
-                EndTextCommandDisplayHelp(0, false, false, 0)
-                if IsControlJustPressed(0, 51) then
-                    DoScreenFadeOut(CONFIG.fadeTime)
-                    local ped = PlayerPedId()
-                    Citizen.Trace('Teleporting to '..tostring(target.coords)..'\n')
-                    if target.ipl then
-                        if not IsIplActive(target.ipl) then
-                            RequestIpl(target.ipl)
-                            while not IsIplActive(target.ipl) do
-                                Citizen.Wait(0)
-                            end
-                        end
-                    end
-                    while not IsScreenFadedOut() do
-                        Citizen.Wait(0)
-                    end
-                    local camHeading = GetGameplayCamRelativeHeading()
-                    local camPitch = GetGameplayCamRelativePitch()
-                    SetEntityCoordsNoOffset(ped, target.coords, false, false, false)
-                    SetEntityHeading(ped, target.heading)
-                    SetGameplayCamRelativeHeading(camHeading)
-                    SetGameplayCamRelativePitch(camPitch, 1.0)
-                    DoScreenFadeIn(CONFIG.fadeTime)
-                end
-            end
-        elseif lastKey then
-            lastKey = nil
-        end
-        ProfilerExitScope()
     end
     ProfilerExitScope()
     return isInteracting
@@ -338,36 +349,38 @@ end)
 AddEventHandler('demmylock:enter-area', function(areaName)
     withModel(CONFIG.keypad, function()
         for doorName, doorData in pairs(LOCKS[areaName]) do
-            for _, keypad in ipairs(doorData.keypads) do
-                local object
-                if keypad.door then
-                    local door = doorData.doors[keypad.door]
-                    object = CreateObjectNoOffset(CONFIG.keypad, door.coords + keypad.offset, false, false, false)
-                    
-                    local doorObject = getDoorObject(door) --GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
-                    if DoesEntityExist(doorObject) then
-                        AttachEntityToEntity(
-                            object,
-                            doorObject,
-                            -1,
-                            keypad.offset,
-                            keypad.rot,
-                            false, --p9 --[[ boolean ]],
-                            false, --useSoftPinning --[[ boolean ]],
-                            false, --collision --[[ boolean ]],
-                            false, --isPed --[[ boolean ]],
-                            0, --vertexIndex --[[ integer ]],
-                            true --fixedRot --[[ boolean ]]
-                        )
+            if doorData.keypads then
+                for _, keypad in ipairs(doorData.keypads) do
+                    local object
+                    if keypad.door then
+                        local door = doorData.doors[keypad.door]
+                        object = CreateObjectNoOffset(CONFIG.keypad, door.coords + keypad.offset, false, false, false)
+
+                        local doorObject = getDoorObject(door) --GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+                        if DoesEntityExist(doorObject) then
+                            AttachEntityToEntity(
+                                object,
+                                doorObject,
+                                -1,
+                                keypad.offset,
+                                keypad.rot,
+                                false, --p9 --[[ boolean ]],
+                                false, --useSoftPinning --[[ boolean ]],
+                                false, --collision --[[ boolean ]],
+                                false, --isPed --[[ boolean ]],
+                                0, --vertexIndex --[[ integer ]],
+                                true --fixedRot --[[ boolean ]]
+                            )
+                        end
+                    else
+                        object = CreateObjectNoOffset(CONFIG.keypad, keypad.coords, false, false, false)
+                        SetEntityRotation(object, keypad.rot, 2, true)
+                        if not keypad.markerLocation then
+                            keypad.markerLocation = GetOffsetFromEntityInWorldCoords(object, CONFIG.indicator.offset)
+                        end
                     end
-                else
-                    object = CreateObjectNoOffset(CONFIG.keypad, keypad.coords, false, false, false)
-                    SetEntityRotation(object, keypad.rot, 2, true)
-                    if not keypad.markerLocation then
-                        keypad.markerLocation = GetOffsetFromEntityInWorldCoords(object, CONFIG.indicator.offset)
-                    end
+                    keypad.object = object
                 end
-                keypad.object = object
             end
         end
     end)

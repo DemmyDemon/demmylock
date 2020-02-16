@@ -7,5 +7,8 @@
     },
     "Sjukhuset Lobby": {
         "_default" : "112#"
+    },
+    "Gentlemen": {
+        "_default" : "1337"
     }
 }
