@@ -24,7 +24,7 @@ To visualize the lock, two components are used.
 1. The prop `prop_ld_keypad_01` 
 2. A tiny marker number 42 (the square one)
 
-The marker is overlayed over the prop to show the *state* of the lock. More on that in the `Lock states` section. When you approach the lock, you get a so-called helptext in the upper left corner, and if you press the right button you will be shown a keypad. The keypad graphics are based on a screenshot of the prop used.
+The marker is overlayed over the prop to show the *state* of the lock. More on that in the [Lock states](#lock-states) section. When you approach the lock, you get a so-called helptext in the upper left corner, and if you press the right button you will be shown a keypad. The keypad graphics are based on a screenshot of the prop used.
 
 ## What do the buttons do?
 
@@ -97,7 +97,7 @@ LOCKS = {
     },
 }
 ```
-The area name is never shown to the user, but it's very important when looking up if the code is correct! More on the codes in the `Defining codes` section.
+The area name is never shown to the user, but it's very important when looking up if the code is correct! More on the codes in the [Defining codes](#defining-codes) section.
 
 
 ### Simple locks
