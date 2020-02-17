@@ -401,18 +401,18 @@ Imagine you have a building with lots of doors in it, and you want them all to h
 }
 ```
 
-### Group locks
+### Group codes
 
 When you use the same code for a bunch of doors, the client has no idea. As mentioned, the `codes.json` file is never sent to the client. This means the user has to enter a different code for all the doors, even though the use the same code on the server side.
 
-You can tell the client to re-use any *correct code* for a lock in a group on *other locks in the same group* by specifying that is is a `grouplock` lock.
+You can tell the client to re-use any *correct code* for a lock in a group on *other locks in the same group* by specifying that is is a `groupcode` lock.
 
 ```lua
 LOCKS = {
     ['Example'] = {
         ['This lock'] = {
             locked = true,
-            grouplock = true,
+            groupcode = true,
             doors = {
                 -- You know the drill
             },
@@ -422,7 +422,7 @@ LOCKS = {
         },
         ['That lock'] = {
             locked = true,
-            grouplock = true, -- Same code saved
+            groupcode = true, -- Same code saved
             doors = {
                 -- Different doors
             },
