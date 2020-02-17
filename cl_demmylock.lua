@@ -1,5 +1,5 @@
 AddTextEntry('DEMMYLOCK_INTERACT', '~a~~n~~INPUT_CONTEXT~ Ange kod')
-AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Upprepa kod ~n~~INPUT_SPRINT~+~INPUT_CONTEXT~ Ange kod')
+AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Upprepa kod ~n~~INPUT_CHARACTER_WHEEL~+~INPUT_CONTEXT~ Ange kod')
 AddTextEntry('DEMMYLOCK_TELEPORT', '~a~~n~~INPUT_CONTEXT~ Kliv igenom')
 
 local inArea = {}
@@ -256,7 +256,7 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                     EndTextCommandDisplayHelp(0, false, false, 0)
 
                     if IsControlJustPressed(0, 51) then
-                        if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 21) then
+                        if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 19) then
                             TriggerServerEvent('demmylock:entered-pin', areaName, lockName, lastKey, not data.locked)
                         else
                             ShowKeypad(areaName, lockName, lastKey, not data.locked)
