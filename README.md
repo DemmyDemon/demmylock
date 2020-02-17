@@ -219,6 +219,39 @@ LOCKS = {
 
 Of course, this works with different angles in a double door set. The door becomes just as frozen as it is when it was locked, but in that new angle.
 
+### Gates
+
+Some doors and gates don't rotate around their center, but slide out of the way or rotate around some mysterious rotation point. These have to be handled in a slightly different way.
+
+Take the gate to Benny's, for example:
+
+```lua
+LOCKS = {
+    ['Bennys'] = {
+        ['Gate'] = {
+            locked = false,
+            gates = {
+                {model=-427498890,coords=vector3(-205.683, -1310.683, 30.296)},
+            },
+            keypads = {
+                {coords=vector3(-207.779, -1310.102, 31.59),rot=vector3(0,0,90)},
+                {coords=vector3(-207.929, -1310.911, 31.59),rot=vector3(0,0,0)},
+            },
+        }
+    },
+}
+```
+
+Gates are not handled or forced like doors are, but are left up to GTAV to handle. This gives less pricese control, but makes a lot of thing available to control that is not an old-fashioned door.
+
+Gates are defined thusly:
+| Propery | Type | Meaning |
+|---------|------|---------|
+| model   | Integer | The model hash of the gate in question, just like with doors. |
+| coords  | vector3 | The exact location of the *closed* gate. |
+
+**Note** the lack of a heading, otherwise it's defined the same as a door. If you use some tool to get the data, it doesn't hurt if you accidentally leave the heading in.
+
 ### Teleporters
 
 A type of lock that *has no doors at all!* It's just a keypad on a wall, though it's probably best for immersion that it's placed next to what *looks like* a door. There are a million of these around the map. For example, the door I used in my indicator demonstration is not actually a door, it is a wall that is textured to look like a door.

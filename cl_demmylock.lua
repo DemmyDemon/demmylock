@@ -91,6 +91,12 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                 end
             end
         end
+        if data.gateHash then
+            local state = DoorSystemGetDoorState(data.gateHash)
+            if state ~= 1 then
+                DoorSystemSetDoorState(data.gateHash, 1, false, false)
+            end
+        end
         if data.entitySets then
             local refresh = false
             local interior = GetInteriorAtCoords(data.entitySets.interior)
@@ -129,6 +135,13 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                 else
                     FreezeEntityPosition(getDoorObject(doorData), false)
                 end
+            end
+        end
+
+        if data.gateHash then
+            local state = DoorSystemGetDoorState(data.gateHash)
+            if state ~= 0 then
+                DoorSystemSetDoorState(data.gateHash, 0, true, true)
             end
         end
 
@@ -382,6 +395,16 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                     keypad.object = object
                 end
             end
+            if doorData.gates then
+                if not doorData.gateHash then
+                    doorData.gateHash = GetHashKey(areaName..'/'..doorName)
+                end
+                if not IsDoorRegisteredWithSystem(doorData.gateHash) then
+                    for i,gate in ipairs(doorData.gates) do
+                        AddDoorToSystem(doorData.gateHash, gate.model, gate.coords.x, gate.coords.y, gate.coords.z, true, true, true)
+                    end
+                end
+            end
         end
     end)
 end)
@@ -394,6 +417,9 @@ AddEventHandler('demmylock:exit-area', function(areaName)
         end
         for _, door in ipairs(doorData) do
             door.doorObject = nil
+        end
+        if doorData.gateHash then
+            RemoveDoorFromSystem(doorData.gateHash)
         end
     end
 end)
@@ -408,6 +434,9 @@ AddEventHandler('onResourceStop', function(resoureName)
                             DeleteObject(keypad.object)
                         end
                     end
+                end
+                if state.gateHash then
+                    RemoveDoorFromSystem(doorData.gateHash)
                 end
             end
         end
@@ -494,9 +523,17 @@ for locationName, locationData in pairs(LOCKS) do
                 end
             end
         end
+        if lockData.gates then
+            for _, gate in pairs(lockData.gates) do
+                itemCount = itemCount + 1
+                center = center + gate.coords
+            end
+        end
     end
-    center = center / itemCount
-    CENTERS[locationName] = center
+    if itemCount > 0 then
+        center = center / itemCount
+        CENTERS[locationName] = center
+    end
 end
 for locationName, locationData in pairs(LOCKS) do
     local maxDistance = 0

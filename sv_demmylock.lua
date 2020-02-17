@@ -1,6 +1,6 @@
 local CODES = nil
 function loadCodes()
-    local codes_JSON = LoadResourceFile(GetCurrentResourceName(), 'codes.json')
+    local codes_JSON = LoadResourceFile(GetCurrentResourceName(), GetConvar('demmyLockCodeFile', 'codes.json'))
     local codes_Lua = json.decode(codes_JSON)
     return codes_Lua
 end

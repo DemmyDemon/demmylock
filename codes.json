@@ -9,6 +9,14 @@
         "_default" : "112#"
     },
     "Gentlemen": {
-        "_default" : "1337"
+        "_default" : "1337",
+        "Isboxen" : "*44#",
+        "Kontoret" : "1881"
+    },
+    "Bennys": {
+        "_default" : "1270"
+    },
+    "Playboy": {
+        "_default" : "#999"
     }
 }
