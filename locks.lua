@@ -283,7 +283,8 @@ LOCKS = {
     },
     ['Bennys'] = {
         ['Porten'] = {
-            locked = false,
+            locked = true,
+            groupcode = true,
             gates = {
                 {model=-427498890,coords=vector3(-205.683, -1310.683, 30.296)},
             },
@@ -291,17 +292,64 @@ LOCKS = {
                 {coords=vector3(-207.779, -1310.102, 31.59),rot=vector3(0.000, 0.000, 90.000)},
                 {coords=vector3(-207.929, -1310.911, 31.59),rot=vector3(0.000, -0.000, -0.000)},
             },
-        }
+        },
+        ['Kontoret'] = {
+            locked = true,
+            groupcode = true,
+            gates = {
+                {model=2000998394,coords=vector3(-205.309, -1328.010, 29.911)},
+            },
+            keypads = {
+                {coords=vector3(-206.676, -1327.957, 31.0),rot=vector3(0.000, -0.000, 180.000)},
+                {coords=vector3(-206.704, -1328.132, 31.0),rot=vector3(0.000, -0.000, -0.000)},
+            },
+        },
     },
-    ['Playboy'] = {
+    ['Playboy Porten'] = {
         ['Huvudporten'] = {
             locked = true,
+            groupcode = true,
             gates = {
                 {model=-2125423493,coords=vector3(-1474.131, 68.388, 52.526)},
             },
             keypads = {
                 {coords=vector3(-1467.704, 68.563, 53.653),rot=vector3(0.012, 0.265, -175.035)},
                 {coords=vector3(-1467.732, 67.965, 53.653),rot=vector3(-0.012, 0.000, 4.965)},
+            },
+        },
+        ['Grind A'] = {
+            locked = true,
+            groupcode = true,
+            doors = {
+                {model=-1859471240,coords=vector3(-1462.425, 65.716, 53.387),heading=9.500},
+            },
+            keypads = {
+                {coords=vector3(-1460.995, 65.902, 52.828),rot=vector3(0.015, -0.001, 9.460)},
+                {coords=vector3(-1460.802, 66.003, 53.039),rot=vector3(-0.015, -0.183, -170.540)},
+            }
+        }
+    },
+    ['Mekonomen'] = {
+        ['Porten'] = {
+            locked = true,
+            groupcode = true,
+            gates = {
+                {model=-550347177,coords=vector3(-356.101, -134.768, 40.061)},
+            },
+            keypads = {
+                {coords=vector3(-357.267, -137.143, 39.408),rot=vector3(-0.000, -0.000, -109.895)},
+                {coords=vector3(-354.394, -137.750, 39.716),rot=vector3(0.000, -0.000, 160.000)},
+            },
+        },
+        ['Kontoret'] = {
+            locked = true,
+            groupcode = true,
+            doors = {
+                {model=-952356348,coords=vector3(-348.049, -133.838, 39.159),heading=249.346},
+            },
+            keypads = {
+                {coords=vector3(-347.463, -132.581, 39.266),rot=vector3(-0.000, 0.000, 67.440)},
+                {coords=vector3(-347.631, -132.406, 39.266),rot=vector3(0.000, 0.000, -112.560)},
             },
         },
     },
