@@ -4,7 +4,7 @@
 
 ## Assumptions
 
-This documentation *assumes* you know the basics of editing `.lua` and `.json` files. The syntax of such files is not explained here, but you might be able to guess what to do based on the examples. Your server will not explode from you experimenting a little, but you do run the risk of *breaking the locks*, meaning all locked doors *stay frozen in place* and all unlocked roors *are open to everyone*. It is highly recommended to play around with this on your test server before actually using it in production.
+This documentation *assumes* you know the basics of editing `.lua` and `.json` files. The syntax of such files is not explained here, but you might be able to guess what to do based on the examples. Your server will not explode from you experimenting a little, but you do run the risk of *breaking the locks*, meaning all locked doors *stay frozen in place* and all unlocked doors *are open to everyone*. It is highly recommended to play around with this on your test server before actually using it in production.
 
 ## Support
 
@@ -14,17 +14,17 @@ Feel free to submit pull requests (including against the documentation!) if you 
 
 ## Why create DemmyLock?
 
-`demmylock` was created from an idea that all the different door lock scripts are all very dependant on their frameworks, and are generally very aesthetically displeasing.  
+`demmylock` was created from an idea that all the different door lock scripts are all very dependant on their frameworks, and are generally very aesthetically displeasing.
 What I set out to do here, was to make it ever so slightly prettier, by not depending on floating 3D text, and to make it completely independant from any framework.
 
 In `demmylock` it doesn't matter what "job" you have. This script has no idea.  
-It cares about one thing, and one thing only: Do you know the code?
+It cares about one thing, and one thing only: _Do you know the code?_
 
 To visualize the lock, two components are used.
-1. The prop `prop_ld_keypad_01`
+1. The prop `prop_ld_keypad_01` 
 2. A tiny marker number 42 (the square one)
 
-The marker is overlayed the prop to show the *state* of the lock. More on that in the *Lock states* section. When you approach the lock, you get a so-called helptext in the upper left corner, and if you press the right button you will be shown a keypad. The keypad graphics are based on a screenshot of the prop used.
+The marker is overlayed over the prop to show the *state* of the lock. More on that in the `Lock states` section. When you approach the lock, you get a so-called helptext in the upper left corner, and if you press the right button you will be shown a keypad. The keypad graphics are based on a screenshot of the prop used.
 
 ## What do the buttons do?
 
@@ -49,7 +49,7 @@ If the server responds with "Na-ah, that's the wrong code!", that code is forgot
 
 ## Lock states ##
 
-The locks have four *states*. These are...
+The locks have four *states*. These are:
 
 | Color  | State       | Meaning                  |
 |--------|-------------|--------------------------|
@@ -97,7 +97,7 @@ LOCKS = {
     },
 }
 ```
-The area name is never shown to the user, but it is very important when looking up if the code is correct! More on the codes in the `Defining codes` section.
+The area name is never shown to the user, but it's very important when looking up if the code is correct! More on the codes in the `Defining codes` section.
 
 
 ### Simple locks
@@ -121,14 +121,14 @@ LOCKS = {
 ```
 
 The `locked` bit is simply the state you want the lock to be in when the resource starts.  
-High security stuff (jail cells, for example), get a `true` here, while stuff you might want to lock sometimes gets a `false`. You can also omit this entirely, and `false` will be assumed.
+High security stuff (jail cells, for example), gets a `true` here, while stuff you might want to lock sometimes gets a `false`. You can also omit this entirely, and `false` will be assumed.
 
 The `doors` bit is a list of doors. A door has three properties.
 | Propery | Type    | What it means                             |
 |---------|---------|-------------------------------------------|
 | model   | Integer | The *hash* of the model name of the door. |
-| coords  | vector3 | The coordianates of the door. |
-| heading | Float   | The rotation of the door *when it is fully closed*. |
+| coords  | vector3 | The coordinates of the door. |
+| heading | Float   | The rotation of the door *when it's fully closed*. |
 
 Using this information, `demmylock` can determine exactly what door you mean, and freeze it when it's locked. Note that it's possible to specify several doors per lock, meaning you operate both doors in a double-door together, if you want.
 
@@ -253,7 +253,7 @@ Let's have a look at the `teleport` section:
 
 | Property | Type    | What it means |
 |----------|---------|---------------|
-| coords   | vector3 | The teleport destination in world coordiantes. |
+| coords   | vector3 | The teleport destination in world coordinates. |
 | heading  | Float   | The heading you want the player to face when they get to the other side. |
 | ipl      | String  | *Optional* interior to load *before* teleporting.
 
@@ -263,7 +263,7 @@ Because teleporters are most often used to go to interior locations, and we don'
 
 `demmylock` makes no attempt at loading interior props or setting interior colors or anything of the sort when teleporting. This is not a "MILO manager" resource *at all*, and will only do the most rudementary of checks. If the teleporter leads to somewhere that is loaded automatically, you can just omit the `ipl` here.
 
-After entering the correct code, **anyone** can step through the teleporter by just strolling up to the keypad and pressing E. This is intentional, as it enables you to bring people with you through the teleporter *withot telling them the code*, just like when you unlock a regular door.
+After entering the correct code, **anyone** can step through the teleporter by just strolling up to the keypad and pressing *E*. This is intentional, as it enables you to bring people with you through the teleporter *withot telling them the code*, just like when you unlock a regular door.
 
 You can specify *multiple* teleport destinations, and what code is used will determine which is used. You can also use `locked = false` to make a teleporter always be active, but then you will also need to specify what destination to use as it can't use a code to figure that out. Let's use our server room example again, but this time with an always-open exit teleporter.
 
@@ -431,7 +431,7 @@ LOCKS = {
 }
 ```
 
-See those brackets? They're what indicates it's a teleporter code. If you walk up to that teleporter and use the code `1234`, which is *the first code*, then you will go to *the first teleporter destination*. If you use the code `2468`, you will go to *the second teleporter destination*.
+See those brackets? They indicate that it's a teleporter code. If you walk up to that teleporter and use the code `1234`, which is *the first code*, then you will go to *the first teleporter destination*. If you use the code `2468`, you will go to *the second teleporter destination*.
 
 ## Did I miss anything?
 
