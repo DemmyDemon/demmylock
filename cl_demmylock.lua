@@ -87,9 +87,9 @@ function adjustRatio(target, current)
     local set = target
 
     if diff > 0.1 then
-        set = current - CONFIG.gateSpeed * GetFrameTime()
+        set = current - CONFIG.doorSpeed * GetFrameTime()
     elseif diff < -0.1 then
-        set = current + CONFIG.gateSpeed * GetFrameTime()
+        set = current + CONFIG.doorSpeed * GetFrameTime()
     end
 
     return set
@@ -115,29 +115,17 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
     if data.locked then
         ProfilerEnterScope('demmylock:handleLock:locked')
         if data.doors then
-            for _,doorData in ipairs(data.doors) do
-                local door = getDoorObject(doorData)
-                local doorAngle = GetEntityHeading(door)
-                if doorAngle ~= doorData.heading then
-                    FreezeEntityPosition(door, true)
-                    SetEntityHeading(door, adjustDoorAngle(doorData.heading, doorAngle))
-                end
-            end
-        end
-        if data.gates then
-            for i, gate in ipairs(data.gates) do
-                local state = DoorSystemGetDoorState(gate.gateHash)
-                --debugText(gate.coords,tostring(state))
+            for _, door in ipairs(data.doors) do
+                local state = DoorSystemGetDoorState(door.systemHash)
                 if state ~= STATE_LOCKED then
-                    DoorSystemSetDoorState(gate.gateHash, STATE_LOCKED, true, true)
+                    DoorSystemSetDoorState(door.systemHash, STATE_LOCKED, true, true)
                 end
 
-                local ratio = DoorSystemGetOpenRatio(gate.gateHash)
+                local ratio = DoorSystemGetOpenRatio(door.systemHash)
                 local adjusted = adjustRatio(0.0, ratio)
-                if not gate.wasAdjusted or gate.wasAdjusted ~= adjusted then
-                    gate.wasAdjusted = adjusted
-                    --debugText(gate.coords + vector3(0,0,1),'ADJUSTING '..gate.wasAdjusted..' '..adjusted)
-                    DoorSystemSetOpenRatio(gate.gateHash, adjusted, false, true)
+                if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
+                    door.wasAdjusted = adjusted
+                    DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
                 end
             end
         end
@@ -167,43 +155,26 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         ProfilerExitScope()
     else
         ProfilerEnterScope('demmylock:handleLock:unlocked')
-        if data.doors then
-            for _,doorData in ipairs(data.doors) do
-                if doorData.open then
-                    local door = getDoorObject(doorData)
-                    local doorAngle = GetEntityHeading(door)
-                    if doorAngle ~= doorData.open then
-                        FreezeEntityPosition(doorObject, true)
-                        SetEntityHeading(door, adjustDoorAngle(doorData.open, doorAngle))
-                    end
-                else
-                    FreezeEntityPosition(getDoorObject(doorData), false)
-                end
-            end
-        end
 
-        if data.gates then
-            for i,gate in ipairs(data.gates) do
-                local state = DoorSystemGetDoorState(gate.gateHash)
-                --debugText(gate.coords,tostring(state))
-                if gate.open then
+        if data.doors then
+            for _,door in ipairs(data.doors) do
+                local state = DoorSystemGetDoorState(door.systemHash)
+                if door.open then
                     if state ~= STATE_OPEN_FORCED then
-                        DoorSystemSetDoorState(gate.gateHash, STATE_OPEN_FORCED, true, true)
+                        DoorSystemSetDoorState(door.systemHash, STATE_OPEN_FORCED, true, true)
                     end
                     
-                    local ratio = DoorSystemGetOpenRatio(gate.gateHash)
-                    local adjusted = adjustRatio(gate.open, ratio)
-                    if not gate.wasAdjusted or gate.wasAdjusted ~= adjusted then
-                        gate.wasAdjusted = adjusted
-                        --debugText(gate.coords + vector3(0,0,1),'ADJUSTING '..gate.wasAdjusted..' '..adjusted)
-                        DoorSystemSetOpenRatio(gate.gateHash, adjusted, false, true)
+                    local ratio = DoorSystemGetOpenRatio(door.systemHash)
+                    local adjusted = adjustRatio(door.open, ratio)
+                    if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
+                        door.wasAdjusted = adjusted
+                        DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
                     end
                 else
                     if state ~= STATE_OPEN then
-                        DoorSystemSetDoorState(gate.gateHash, STATE_OPEN, true, true)
+                        DoorSystemSetDoorState(door.systemHash, STATE_OPEN, true, true)
                     end
                 end
-
             end
         end
 
@@ -457,21 +428,20 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                     keypad.object = object
                 end
             end
-            if doorData.gates then
-                for i,gate in ipairs(doorData.gates) do
-                    if not gate.gateHash then
-                        gate.gateHash = GetHashKey(areaName..'_'..doorName..'_'..i)
+            if doorData.doors then
+                for index,door in ipairs(doorData.doors) do
+                    if not door.systemHash then
+                        door.systemHash = GetHashKey(areaName..'_'..doorName..'_'..index)
                     end
-                    if not IsDoorRegisteredWithSystem(gate.gateHash) then
-                        AddDoorToSystem(gate.gateHash, gate.model, gate.coords.x, gate.coords.y, gate.coords.z,
+                    if not IsDoorRegisteredWithSystem(door.systemHash) then
+                        AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
                             false,
                             true, -- Force closed when locked?
                             false
                         )
                     end
-                    DoorSystemSetDoorState(gate.gateHash, 4, true, true)
-                    gate.targetratio = 0.0
-                    DoorSystemSetOpenRatio(gate.gateHash, 0.0, false, true)
+                    DoorSystemSetDoorState(door.systemHash, 4, true, true)
+                    DoorSystemSetOpenRatio(door.systemHash, 0.0, false, true)
                 end
             end
         end
@@ -488,12 +458,7 @@ AddEventHandler('demmylock:exit-area', function(areaName)
         end
         if doorData.doors then
             for _, door in ipairs(doorData.doors) do
-                door.doorObject = nil
-            end
-        end
-        if doorData.gates then
-            for _, gate in ipairs(doorData.gates) do
-                RemoveDoorFromSystem(gate.gateHash)
+                RemoveDoorFromSystem(door.systemHash)
             end
         end
     end
@@ -509,9 +474,9 @@ AddEventHandler('onResourceStop', function(resoureName)
                             DeleteObject(keypad.object)
                         end
                     end
-                    if data.gates then
-                        for i,gate in ipairs(data.gates) do
-                            RemoveDoorFromSystem(gate.gateHash)
+                    if data.doors then
+                        for _, door in ipairs(data.doors) do
+                            RemoveDoorFromSystem(door.systemHash)
                         end
                     end
                 end
@@ -581,7 +546,6 @@ Citizen.CreateThread(function()
     end
 end)
 
--- This used to be in locks.lua, but it's autogenerated now, so it should not be in what is ostensibly a configuration file!
 for locationName, locationData in pairs(LOCKS) do
     local center = vector3(0,0,0)
     local itemCount = 0
@@ -598,12 +562,6 @@ for locationName, locationData in pairs(LOCKS) do
                     itemCount = itemCount + 1
                     center = center + keypad.coords
                 end
-            end
-        end
-        if lockData.gates then
-            for _, gate in pairs(lockData.gates) do
-                itemCount = itemCount + 1
-                center = center + gate.coords
             end
         end
     end
@@ -634,6 +592,5 @@ for locationName, locationData in pairs(LOCKS) do
             end
         end
     end
-    -- Citizen.Trace(string.format("Max distance for %s is %0.2f\n", locationName, maxDistance))
     SIZES[locationName] = maxDistance + CONFIG.range.areaMargin
 end

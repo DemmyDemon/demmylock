@@ -26,6 +26,8 @@ To visualize the lock, two components are used.
 
 The marker is overlayed over the prop to show the *state* of the lock. More on that in the [Lock states](#lock-states) section. When you approach the lock, you get a so-called helptext in the upper left corner, and if you press the right button you will be shown a keypad. The keypad graphics are based on a screenshot of the prop used.
 
+Also, performance. After a bit of tinkering I'm confident that `demmylock` outperforms all other publically released general-purpose door locking resource. If it doesn't, please point this out to me, and I'll head over to it to get schooled.
+
 ## What do the buttons do?
 
 ![What the keypad looks like](res/keypad.png)
@@ -74,7 +76,7 @@ In [the configuration file](config.lua), you can mess around with a few settings
 | keypad           | What prop is used for the keypad object. |
 | indicator        | What marker is used to show the state of the lock. |
 | teleportTime     | How many *milliseconds* a door stays open for teleportation. |
-| closeSpeed       | How quickly a swinging door swings closed when it is locked. |
+| doorSpeed        | How quickly a propped-open door swings closed when it is locked. |
 | fadeTime         | The number of *milliseconds* it takes for the screen to fade in or out when teleporting. |
 | range.areaMargin | How far outside a grouping of locks you can be before they pop up. |
 | range.interact   | How far you can be from a keypad and still interact with it. |
@@ -110,7 +112,7 @@ LOCKS = {
         ['Simple lock'] = {
             locked = true,
             doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
+                {model=854291622,coords=vector3(346.774, -584.002, 43.434)},
             },
             keypads = {
                 {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
@@ -128,7 +130,7 @@ The `doors` bit is a list of doors. A door has three properties.
 |---------|---------|-------------------------------------------|
 | model   | Integer | The *hash* of the model name of the door. |
 | coords  | vector3 | The coordinates of the door. |
-| heading | Float   | The rotation of the door *when it's fully closed*. |
+| heading | Float   | No longer used! Gone! |
 
 Using this information, `demmylock` can determine exactly what door you mean, and freeze it when it's locked. Note that it's possible to specify several doors per lock, meaning you operate both doors in a double-door together, if you want.
 
@@ -198,7 +200,7 @@ Of course, that number can be anything you want. It is not possible to lock the 
 
 ### Propped open
 
-Sometimes it's not enough to just have the door be unlocked. You want it to be actually propped open! To do this, simply add the angle you want it twisted to when it's unlocked, like so:
+Sometimes it's not enough to just have the door be unlocked. You want it to be actually propped open! To do this, simply add the openness ration you want it at. This ranges from `-1.0` to `1.0`, which are completely open in different directions.
 
 ```lua
 LOCKS = {
@@ -207,7 +209,7 @@ LOCKS = {
             locked = true,
             relock = 5000,
             doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.2, open=73.4},
+                {model=854291622,coords=vector3(346.774, -584.002, 43.434),open=1.0},
             },
             keypads = {
                 {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.0, 0.0, -20.0)},
@@ -217,40 +219,11 @@ LOCKS = {
 }
 ```
 
-Of course, this works with different angles in a double door set. The door becomes just as frozen as it is when it was locked, but in that new angle.
+**Note** that almost every time, a double door set will be opposite of eachother if you want them to open the same way. One at `-1.0` and the other at `1.0`.
 
 ### Gates
 
-Some doors and gates don't rotate around their center, but slide out of the way or rotate around some mysterious rotation point. These have to be handled in a slightly different way.
-
-Take the gate to Benny's, for example:
-
-```lua
-LOCKS = {
-    ['Bennys'] = {
-        ['Gate'] = {
-            locked = false,
-            gates = {
-                {model=-427498890,coords=vector3(-205.683, -1310.683, 30.296)},
-            },
-            keypads = {
-                {coords=vector3(-207.779, -1310.102, 31.59),rot=vector3(0,0,90)},
-                {coords=vector3(-207.929, -1310.911, 31.59),rot=vector3(0,0,0)},
-            },
-        }
-    },
-}
-```
-
-Gates are not handled or forced like doors are, but are left up to GTAV to handle. This gives less pricese control, but makes a lot of thing available to control that is not an old-fashioned door.
-
-Gates are defined thusly:
-| Propery | Type | Meaning |
-|---------|------|---------|
-| model   | Integer | The model hash of the gate in question, just like with doors. |
-| coords  | vector3 | The exact location of the *closed* gate. |
-
-**Note** the lack of a heading, otherwise it's defined the same as a door. If you use some tool to get the data, it doesn't hurt if you accidentally leave the heading in.
+Gates are an outdated concept, and the upsides to this have been baked into normal doors while the upsides to normal doors was preserved. Phew!
 
 ### Teleporters
 
