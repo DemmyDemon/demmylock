@@ -13,9 +13,10 @@ CONFIG = {
     },
     teleportTime = 5000,
     closeSpeed = 200.0,
+    gateSpeed = 1.0,
     fadeTime = 300,
     range = {
-        areaMargin = 20.0,
+        areaMargin = 100.0,
         interact = 1.0,
     },
 }

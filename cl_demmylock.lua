@@ -8,6 +8,10 @@ local lastKey
 local gotLockState = false
 local DEBUGAREAS = false
 
+local STATE_LOCKED = 4
+local STATE_OPEN = 0
+local STATE_OPEN_FORCED = -1
+
 -- These are generated at startup!
 local CENTERS = {} -- Area centers
 local SIZES = {} -- Area sizes
@@ -40,6 +44,17 @@ function ProfilerEnterScope()
     end
 end
 
+function debugText(where, what)
+    SetDrawOrigin(where)
+    BeginTextCommandDisplayText('STRING')
+    SetTextCentre(true)
+    SetTextOutline()
+    SetTextColour(255, 0, 0, 128)
+    AddTextComponentSubstringPlayerName(tostring(what))
+    EndTextCommandDisplayText(0.0, 0.0)
+    ClearDrawOrigin()
+end
+
 
 function adjustDoorAngle(target, current)
     ProfilerEnterScope('demmylock:adjustDoorAngle')
@@ -60,6 +75,24 @@ function adjustDoorAngle(target, current)
     ProfilerExitScope()
     return set
 
+end
+
+function adjustRatio(target, current)
+    
+    local diff = current - target
+    if diff < -1.0 or diff > 1.0 then
+        return target
+    end
+
+    local set = target
+
+    if diff > 0.1 then
+        set = current - CONFIG.gateSpeed * GetFrameTime()
+    elseif diff < -0.1 then
+        set = current + CONFIG.gateSpeed * GetFrameTime()
+    end
+
+    return set
 end
 
 function getDoorObject(doorData)
@@ -91,10 +124,21 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                 end
             end
         end
-        if data.gateHash then
-            local state = DoorSystemGetDoorState(data.gateHash)
-            if state ~= 1 then
-                DoorSystemSetDoorState(data.gateHash, 1, false, false)
+        if data.gates then
+            for i, gate in ipairs(data.gates) do
+                local state = DoorSystemGetDoorState(gate.gateHash)
+                --debugText(gate.coords,tostring(state))
+                if state ~= STATE_LOCKED then
+                    DoorSystemSetDoorState(gate.gateHash, STATE_LOCKED, true, true)
+                end
+
+                local ratio = DoorSystemGetOpenRatio(gate.gateHash)
+                local adjusted = adjustRatio(0.0, ratio)
+                if not gate.wasAdjusted or gate.wasAdjusted ~= adjusted then
+                    gate.wasAdjusted = adjusted
+                    --debugText(gate.coords + vector3(0,0,1),'ADJUSTING '..gate.wasAdjusted..' '..adjusted)
+                    DoorSystemSetOpenRatio(gate.gateHash, adjusted, false, true)
+                end
             end
         end
         if data.entitySets then
@@ -138,10 +182,28 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
             end
         end
 
-        if data.gateHash then
-            local state = DoorSystemGetDoorState(data.gateHash)
-            if state ~= 0 then
-                DoorSystemSetDoorState(data.gateHash, 0, true, true)
+        if data.gates then
+            for i,gate in ipairs(data.gates) do
+                local state = DoorSystemGetDoorState(gate.gateHash)
+                --debugText(gate.coords,tostring(state))
+                if gate.open then
+                    if state ~= STATE_OPEN_FORCED then
+                        DoorSystemSetDoorState(gate.gateHash, STATE_OPEN_FORCED, true, true)
+                    end
+                    
+                    local ratio = DoorSystemGetOpenRatio(gate.gateHash)
+                    local adjusted = adjustRatio(gate.open, ratio)
+                    if not gate.wasAdjusted or gate.wasAdjusted ~= adjusted then
+                        gate.wasAdjusted = adjusted
+                        --debugText(gate.coords + vector3(0,0,1),'ADJUSTING '..gate.wasAdjusted..' '..adjusted)
+                        DoorSystemSetOpenRatio(gate.gateHash, adjusted, false, true)
+                    end
+                else
+                    if state ~= STATE_OPEN then
+                        DoorSystemSetDoorState(gate.gateHash, STATE_OPEN, true, true)
+                    end
+                end
+
             end
         end
 
@@ -396,13 +458,20 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                 end
             end
             if doorData.gates then
-                if not doorData.gateHash then
-                    doorData.gateHash = GetHashKey(areaName..'/'..doorName)
-                end
-                if not IsDoorRegisteredWithSystem(doorData.gateHash) then
-                    for i,gate in ipairs(doorData.gates) do
-                        AddDoorToSystem(doorData.gateHash, gate.model, gate.coords.x, gate.coords.y, gate.coords.z, true, true, true)
+                for i,gate in ipairs(doorData.gates) do
+                    if not gate.gateHash then
+                        gate.gateHash = GetHashKey(areaName..'_'..doorName..'_'..i)
                     end
+                    if not IsDoorRegisteredWithSystem(gate.gateHash) then
+                        AddDoorToSystem(gate.gateHash, gate.model, gate.coords.x, gate.coords.y, gate.coords.z,
+                            false,
+                            true, -- Force closed when locked?
+                            false
+                        )
+                    end
+                    DoorSystemSetDoorState(gate.gateHash, 4, true, true)
+                    gate.targetratio = 0.0
+                    DoorSystemSetOpenRatio(gate.gateHash, 0.0, false, true)
                 end
             end
         end
@@ -411,15 +480,21 @@ end)
 
 AddEventHandler('demmylock:exit-area', function(areaName)
     for doorName, doorData in pairs(LOCKS[areaName]) do
-        for _, keypad in ipairs(doorData.keypads) do
-            DeleteObject(keypad.object)
-            keypad.object = nil
+        if doorData.keypads then
+            for _, keypad in ipairs(doorData.keypads) do
+                DeleteObject(keypad.object)
+                keypad.object = nil
+            end
         end
-        for _, door in ipairs(doorData) do
-            door.doorObject = nil
+        if doorData.doors then
+            for _, door in ipairs(doorData.doors) do
+                door.doorObject = nil
+            end
         end
-        if doorData.gateHash then
-            RemoveDoorFromSystem(doorData.gateHash)
+        if doorData.gates then
+            for _, gate in ipairs(doorData.gates) do
+                RemoveDoorFromSystem(gate.gateHash)
+            end
         end
     end
 end)
@@ -434,9 +509,11 @@ AddEventHandler('onResourceStop', function(resoureName)
                             DeleteObject(keypad.object)
                         end
                     end
-                end
-                if state.gateHash then
-                    RemoveDoorFromSystem(doorData.gateHash)
+                    if data.gates then
+                        for i,gate in ipairs(data.gates) do
+                            RemoveDoorFromSystem(gate.gateHash)
+                        end
+                    end
                 end
             end
         end

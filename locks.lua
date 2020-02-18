@@ -3,7 +3,7 @@ LOCKS = {
         ['Avdelning A'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-434783486,coords=vector3(302.803, -581.425, 43.434),heading=340.0},
                 {model=-1700911976,coords=vector3(305.222, -582.306, 43.434),heading=340.0},
             },
@@ -15,7 +15,7 @@ LOCKS = {
         ['Labratorium'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(307.118, -569.569, 43.434),heading=339.906},
             },
             keypads = {
@@ -26,7 +26,7 @@ LOCKS = {
         ['Operation 1'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-1700911976,coords=vector3(314.424, -572.222, 43.434),heading=340.158},
                 {model=-434783486,coords=vector3(312.005, -571.341, 43.434),heading=339.811},
             },
@@ -38,7 +38,7 @@ LOCKS = {
         ['Operation 2'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-434783486,coords=vector3(317.843, -573.466, 43.434),heading=340.000},
                 {model=-1700911976,coords=vector3(320.262, -574.346, 43.434),heading=340.000},
             },
@@ -50,7 +50,7 @@ LOCKS = {
         ['Operation 3'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-434783486,coords=vector3(323.238, -575.429, 43.434),heading=339.914},
                 {model=-1700911976,coords=vector3(325.657, -576.310, 43.434),heading=340.000},
             },
@@ -62,7 +62,7 @@ LOCKS = {
         ['Intensivavdelning'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-434783486,coords=vector3(318.485, -579.228, 43.434),heading=160.029},
                 {model=-1700911976,coords=vector3(316.066, -578.348, 43.434),heading=159.991},
             },
@@ -76,7 +76,7 @@ LOCKS = {
         ['Avdelning A'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-1700911976,coords=vector3(325.669, -580.460, 43.434),heading=250.064},
                 {model=-434783486,coords=vector3(326.550, -578.041, 43.434),heading=249.869},
             },
@@ -88,7 +88,7 @@ LOCKS = {
         ['Avdelning B'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-434783486,coords=vector3(324.236, -589.226, 43.434),heading=340.0},
                 {model=-1700911976,coords=vector3(326.655, -590.107, 43.434),heading=340.0},
             },
@@ -100,7 +100,7 @@ LOCKS = {
         ['MRI'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(336.163, -580.140, 43.434),heading=340.219},
             },
             keypads = {
@@ -111,7 +111,7 @@ LOCKS = {
         ['Diagnosrum'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(340.782, -581.821, 43.434),heading=340.135},
             },
             keypads = {
@@ -122,7 +122,7 @@ LOCKS = {
         ['Runtgen'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
             },
             keypads = {
@@ -133,7 +133,7 @@ LOCKS = {
         ['Administration'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(339.005, -586.703, 43.434),heading=340.079},
             },
             keypads = {
@@ -144,7 +144,7 @@ LOCKS = {
         ['Avdelning C'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=-434783486,coords=vector3(349.314, -586.326, 43.434),heading=250.0},
                 {model=-1700911976,coords=vector3(348.433, -588.745, 43.434),heading=250.0},
             },
@@ -158,7 +158,7 @@ LOCKS = {
         ['Reception'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(313.480, -595.458, 43.434),heading=250.0},
             },
             keypads = {
@@ -169,7 +169,7 @@ LOCKS = {
         ['Pausrum'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=854291622,coords=vector3(309.134, -597.751, 43.434),heading=160.0},
             },
             keypads = {
@@ -182,9 +182,11 @@ LOCKS = {
         ['Porten'] = {
             locked = true,
             groupcode = true,
-            doors = {
-                {model=546378757,coords=vector3(-137.799, 973.709, 236.114),heading=336.000,open=250.000},
-                {model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),heading=336.212,open=69.000},
+            gates = {
+                --{model=546378757,coords=vector3(-137.799, 973.709, 236.114),heading=336.000,open=250.000},
+                --{model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),heading=336.212,open=69.000},
+                {model=546378757,coords=vector3(-137.799, 973.709, 236.114),heading=336.000,open=-1.0},
+                {model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),heading=336.212,open=1.0},
             },
             keypads = {
                 {coords=vector3(-132.547, 971.055, 236.0),rot=vector3(0.0, 0.0, -24.388)},
@@ -194,7 +196,7 @@ LOCKS = {
         ['Huvudingången'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=1901183774,coords=vector3(-112.217, 985.525, 235.991),heading=290.200},
             },
             keypads = {
@@ -205,18 +207,20 @@ LOCKS = {
         ['Sidoingången'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=1901183774,coords=vector3(-61.771, 998.030, 234.736),heading=319.660},
             },
             keypads = {
-                {door=1,offset=vector3(-1.027, 0.029, -0.060),rot=vector3(-0.000, 0.000, 179.927)},
-                {door=1,offset=vector3(-1.031, -0.036, -0.060),rot=vector3(-0.000, 0.000, -0.073)},
+                {coords=vector3(-63.419, 999.691, 234.850),rot=vector3(-0.000, 0.001, 139.930)},
+                {coords=vector3(-63.890, 999.595, 234.689),rot=vector3(-0.152, -0.055, -39.939)},
+                -- {door=1,offset=vector3(-1.027, 0.029, -0.060),rot=vector3(-0.000, 0.000, 179.927)},
+                -- {door=1,offset=vector3(-1.031, -0.036, -0.060),rot=vector3(-0.000, 0.000, -0.073)},
             }
         },
         ['Isboxen'] = {
             locked = true,
             relock = 10000,
-            doors = {
+            gates = {
                 {model=-1364226422,coords=vector3(-76.390, 995.164, 234.680),heading=140.0},
             },
             keypads = {
@@ -226,7 +230,7 @@ LOCKS = {
         },
         ['Kontoret'] = {
             locked = true,
-            doors = {
+            gates = {
                 {model=736699661,coords=vector3(-61.478, 991.785, 234.727),heading=229.859},
             },
             keypads = {
@@ -237,7 +241,7 @@ LOCKS = {
         ['Myshörnan'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=1042741067,coords=vector3(-82.561, 1001.321, 230.784),heading=19.842},
             },
             keypads = {
@@ -248,7 +252,7 @@ LOCKS = {
         ['Verktygslådan'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=1042741067,coords=vector3(-83.594, 998.117, 230.781),heading=109.969},
             },
             keypads = {
@@ -259,7 +263,7 @@ LOCKS = {
         ['Stora salen'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=736699661,coords=vector3(-103.958, 991.122, 235.930),heading=110.0},
                 {model=736699661,coords=vector3(-104.843, 993.553, 235.930),heading=290.0},
             },
@@ -271,7 +275,7 @@ LOCKS = {
         ['Nedre dörren'] = {
             locked = true,
             groupcode = true,
-            doors = {
+            gates = {
                 {model=736699661,coords=vector3(-84.500, 1003.875, 234.739),heading=289.949},
                 {model=736699661,coords=vector3(-83.610, 1001.433, 234.742),heading=110.031},
             },
