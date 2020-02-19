@@ -1,20 +1,20 @@
-# Demmy's Locking Resource #
+# Demmy's Locking Resource
 
-`demmylock` is a door locking resource for [FiveM](https://fivem.net/), and is entirely useless without a `cfx-server` running and a FiveM client connected to that server.
+`demmylock` is a door locking resource for [FiveM](https://fivem.net/), and is entirely useless without a `cfx-server` running and a `FiveM` client connected to that server.
 
 ## Assumptions
 
 This documentation *assumes* you know the basics of editing `.lua` and `.json` files. The syntax of such files is not explained here, but you might be able to guess what to do based on the examples. Your server will not explode from you experimenting a little, but you do run the risk of *breaking the locks*, meaning all locked doors *stay frozen in place* and all unlocked doors *are open to everyone*. It is highly recommended to play around with this on your test server before actually using it in production.
 
-## Limitations
-
-Right now, only 20 doors can be loaded at a time, even if they are in different defined "areas" in demmylock. This is being looked into, and will likely be overcome soon.
+It is also assumed that you are familiar with [the vector3 data type](https://docs.fivem.net/docs/scripting-reference/runtimes/lua/functions/vector3/).
 
 ## Support
 
 Absolutely no support what so ever is given for this resource. If you have an issue with it you are invited to create an issue here on GitHub, but there are absolutely no guarantees that I will do anything about it. "How do I..." issues may be closed without comment.
 
 Feel free to submit pull requests (including against the documentation!) if you have anything to contrubute. Feature requests without provided use cases and/or code will be ignored, though.
+
+All definitions, file formats and procedures are **subject to change without notice**. This documentation is **without any guarantees of accuracy**, and the package as a whole **comes with no warranty, and is not to be considered fit for any perticular purpose**. See [the license](LICENSE.md) for the legaleese version of this babble.
 
 ## Why create DemmyLock?
 
@@ -47,13 +47,13 @@ The numbers, as well as `*` and `#`, can be entered as part of the code.
 | Yellow       | Clear keypad entry entirely                |
 | Silver       | Does exactly nothing                       |
 
-## Reusing codes ##
+## Reusing codes
 
 When a code is entered, it is stored on the client as the code for that door. That means you don't have to enter the code again the next time you use that door, and a different prompt is shown for the helptext. This is useful for everyone, but especially for streamers. It means you only have to hide the code *the first time you enter it*, and then you can re-use that code for as long as it's valid.
 
 If the server responds with "Na-ah, that's the wrong code!", that code is forgotten for ever, and you will have to enter a new code the next time you want to open that lock.
 
-## Lock states ##
+## Lock states
 
 The locks have four *states*. These are:
 
@@ -70,6 +70,10 @@ The lock states look like this:
 ![Green/open state](res/door_state_open.png)
 ![Yellow/relock state](res/door_state_relock.png)
 ![Purple/teleport state](res/door_state_teleport.png)
+
+## Color blind
+
+Yes, I am aware that the red and green are the exact same hue, and might be hard to distinguish if you are red/green color blind. Fixing this is on my list, but I need an actual color blind person to help me out in testing it.
 
 ## Configuration
 
@@ -128,11 +132,11 @@ The `locked` bit is simply the state you want the lock to be in when the resourc
 High security stuff (jail cells, for example), gets a `true` here, while stuff you might want to lock sometimes gets a `false`. You can also omit this entirely, and `false` will be assumed.
 
 The `doors` bit is a list of doors. A door has three properties.
-| Propery | Type    | What it means                             |
-|---------|---------|-------------------------------------------|
-| model   | Integer | The *hash* of the model name of the door. |
-| coords  | vector3 | The coordinates of the door. |
-| heading | Float   | No longer used! Gone! |
+| Propery    | Type    | What it means                             |
+|------------|---------|-------------------------------------------|
+| model      | Integer | The *hash* of the model name of the door. |
+| coords     | vector3 | The coordinates of the door. |
+| keeploaded | Boolean | See the [Gates behave strangely](#gates-behave-strangely) section |
 
 Using this information, `demmylock` can determine exactly what door you mean, and freeze it when it's locked. Note that it's possible to specify several doors per lock, meaning you operate both doors in a double-door together, if you want.
 
@@ -217,9 +221,32 @@ AddLocks('Example',{
 
 **Note** that almost every time, a double door set will be opposite of eachother if you want them to open the same way. One at `-1.0` and the other at `1.0`.
 
-### Gates
+### Gates behave strangely
 
-Gates are an outdated concept, and the upsides to this have been baked into normal doors while the upsides to normal doors was preserved. Phew!
+Some gates, specifically the ones that are set to react to an approaching vehicle at pretty dramatic distances, do not play well with the loading and unloading of doors that `demmylock` does. When such a gate is behaving stragely, you have to tell `demmylock` to just keep it loaded rather than unloading it to make room for more doors.
+
+This is done by adding `keeploaded=true` to the door definition, like so:
+
+```lua
+AddLocks('Bennys',{
+    ['Gate'] = {
+        locked = true,
+        doors = {
+            {
+                model=-427498890,
+                coords=vector3(-205.683, -1310.683, 30.296),
+                keeploaded=true,
+            },
+        },
+        keypads = {
+            {coords=vector3(-207.779,-1310.102,31.59),rot=vector3(0,0,90)},
+            {coords=vector3(-207.929,-1310.911,31.59),rot=vector3(0,0,0)},
+        },
+    },
+})
+```
+
+And yes, I picked the Benny's gate because it is an excellent example of this problem.
 
 ### Teleporters
 

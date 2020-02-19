@@ -40,8 +40,8 @@ function ProfilerEnterScope()
     end
 end
 
-function debugText(where, what)
-    ProfilerEnterScope('demmylock:debugText')
+function warningText(where, what)
+    ProfilerEnterScope('demmylock:warningText')
     SetDrawOrigin(where)
     BeginTextCommandDisplayText('STRING')
     SetTextCentre(true)
@@ -63,9 +63,9 @@ function adjustRatio(target, current)
 
     local set = target
 
-    if diff > 0.1 then
+    if diff > 0.15 then
         set = current - CONFIG.doorSpeed * GetFrameTime()
-    elseif diff < -0.1 then
+    elseif diff < -0.15 then
         set = current + CONFIG.doorSpeed * GetFrameTime()
     end
 
@@ -91,7 +91,7 @@ function handleDoorRange(door, pedLocation)
     end
 
     local distance = #(door.coords - pedLocation)
-    if door.keepLoaded or distance < CONFIG.range.doorLoad then
+    if door.keeploaded or distance < CONFIG.range.doorLoad then
         if not IsDoorRegisteredWithSystem(door.systemHash) then
             AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
                 false,
@@ -132,7 +132,6 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
 
                     if state ~= STATE_LOCKED then
                         DoorSystemSetDoorState(door.systemHash, STATE_LOCKED, true, true)
-                        debugText(door.coords,state)
                     end
 
                     local ratio = DoorSystemGetOpenRatio(door.systemHash)
@@ -140,6 +139,8 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                     if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
                         door.wasAdjusted = adjusted
                         DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
+                    else
+                        DoorSystemSetOpenRatio(door.systemHash, 0.0, false, true)
                     end
                 end
             end
@@ -454,14 +455,14 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                     if not door.systemHash then
                         door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
                     end
-                    if door.keepLoaded and not IsDoorRegisteredWithSystem(door.systemHash) then
+                    if door.keeploaded and not IsDoorRegisteredWithSystem(door.systemHash) then
                         AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
                             false,
                             true, -- Force closed when locked?
                             false
                         )
                     end
-                    DoorSystemSetDoorState(door.systemHash, 4, true, true)
+                    DoorSystemSetDoorState(door.systemHash, STATE_LOCKED, true, true)
                     DoorSystemSetOpenRatio(door.systemHash, 0.0, false, true)
                 end
             end
@@ -570,7 +571,7 @@ Citizen.CreateThread(function()
             end
         end
         if doorCountThisFrame > 20 then
-            debugText(myLocation, 'High door count: '..doorCountThisFrame..'/20')
+            warningText(myLocation, 'High door count: '..doorCountThisFrame..'/20')
         end
         Citizen.Wait(0)
     end

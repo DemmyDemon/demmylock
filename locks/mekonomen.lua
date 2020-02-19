@@ -3,7 +3,7 @@ AddLocks('Mekonomen',{
         locked = true,
         groupcode = true,
         doors = {
-            {model=-550347177,coords=vector3(-356.101, -134.768, 40.061)},
+            {model=-550347177,coords=vector3(-356.101, -134.768, 40.061),keeploaded=true},
         },
         keypads = {
             {coords=vector3(-357.267, -137.143, 39.408),rot=vector3(-0.000, -0.000, -109.895)},

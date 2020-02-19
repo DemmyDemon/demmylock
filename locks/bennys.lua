@@ -3,7 +3,7 @@ AddLocks('Bennys',{
         locked = true,
         groupcode = true,
         doors = {
-            {model=-427498890,coords=vector3(-205.683, -1310.683, 30.296)},
+            {model=-427498890,coords=vector3(-205.683, -1310.683, 30.296), keeploaded=true},
         },
         keypads = {
             {coords=vector3(-207.779, -1310.102, 31.59),rot=vector3(0.000, 0.000, 90.000)},
