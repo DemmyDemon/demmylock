@@ -1,17 +1,18 @@
-local CODES = nil
-function loadCodes()
-    local codes_JSON = LoadResourceFile(GetCurrentResourceName(), GetConvar('demmyLockCodeFile', 'codes.json'))
-    local codes_Lua = json.decode(codes_JSON)
-    return codes_Lua
+local CODES = {}
+
+function AddCodes(area, codes)
+    if not CODES[area] then
+        CODES[area] = {}
+    end
+    for name, data in pairs(codes) do
+        -- No dupe notification because they probably *want* to override the "metagaming" file
+        CODES[area][name] = data
+    end
 end
 
 function verifyPin(area, lock, pin)
-    
-    if not CODES then
-        CODES = loadCodes()
-    end
 
-    if CODES and CODES[area] and CODES[area][lock] then
+    if CODES[area] and CODES[area][lock] then
         return (pin == CODES[area][lock])
     elseif CODES and CODES[area] and CODES[area]._default then
         return (pin == CODES[area]._default)
@@ -105,13 +106,3 @@ AddEventHandler ('demmylock:request-lock-state', function()
     lockStateCache = lockState
 
 end)
-
-RegisterCommand('reloadlockcodes', function(source, args, raw)
-    CODES = loadCodes()
-    if source == 0 then
-        Citizen.Trace('DemmyLock codes reloaded by console.\n')
-    else
-        Citizen.Trace('DemmyLock codes reloaded by '..GetPlayerName(source)..'.\n')
-        TriggerClientEvent('chat:addMessage', source, {args={'DemmyLock', 'Codes reloaded!'}})
-    end
-end,true)

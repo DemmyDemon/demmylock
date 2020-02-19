@@ -12,10 +12,6 @@ local STATE_LOCKED = 4
 local STATE_OPEN = 0
 local STATE_OPEN_FORCED = -1
 
--- These are generated at startup!
-local CENTERS = {} -- Area centers
-local SIZES = {} -- Area sizes
-
 function withModel(hash, callback)
     if not HasModelLoaded(hash) then
         RequestModel(hash)
@@ -50,31 +46,10 @@ function debugText(where, what)
     SetTextCentre(true)
     SetTextOutline()
     SetTextColour(255, 0, 0, 128)
+    SetTextScale(0.5, 0.5)
     AddTextComponentSubstringPlayerName(tostring(what))
     EndTextCommandDisplayText(0.0, 0.0)
     ClearDrawOrigin()
-end
-
-
-function adjustDoorAngle(target, current)
-    ProfilerEnterScope('demmylock:adjustDoorAngle')
-
-    local diff = current - target
-    local set = target
-    
-    if diff > 180 then
-        set = current + CONFIG.closeSpeed * GetFrameTime()
-    elseif diff > 2.5 then
-        set = current - CONFIG.closeSpeed * GetFrameTime()
-    elseif diff < -180 then
-        set = current - CONFIG.closeSpeed * GetFrameTime()
-    elseif diff < -2.5 then
-        set = current + CONFIG.closeSpeed * GetFrameTime()
-    end
-
-    ProfilerExitScope()
-    return set
-
 end
 
 function adjustRatio(target, current)
@@ -109,14 +84,32 @@ end
 
 function handleLock(pedLocation, areaName, lockName, data, isInteracting)
     ProfilerEnterScope('demmylock:handleLock')
+    local doorCount = 0
     local r,g,b,a = table.unpack(CONFIG.indicator.color.locked)
     local busy = false
 
     if data.locked then
         ProfilerEnterScope('demmylock:handleLock:locked')
         if data.doors then
-            for _, door in ipairs(data.doors) do
+            for index, door in ipairs(data.doors) do
+                
+                doorCount = doorCount + 1
+
+                if not door.systemHash then
+                    door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
+                end
+
+                if not IsDoorRegisteredWithSystem(door.systemHash) then
+                    debugText(door.coords, 'DOOR ERROR~n~'..areaName..'/'..lockName)
+                    AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
+                        false,
+                        true, -- Force closed when locked?
+                        true
+                    )
+                end
+
                 local state = DoorSystemGetDoorState(door.systemHash)
+
                 if state ~= STATE_LOCKED then
                     DoorSystemSetDoorState(door.systemHash, STATE_LOCKED, true, true)
                 end
@@ -157,8 +150,25 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         ProfilerEnterScope('demmylock:handleLock:unlocked')
 
         if data.doors then
-            for _,door in ipairs(data.doors) do
+            for index, door in ipairs(data.doors) do
+
+                doorCount = doorCount + 1
+
+                if not door.systemHash then
+                    door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
+                end
+
+                if not IsDoorRegisteredWithSystem(door.systemHash) then
+                    debugText(door.coords, 'DOOR ERROR')
+                    AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
+                        false,
+                        true, -- Force closed when locked?
+                        false
+                    )
+                end
+
                 local state = DoorSystemGetDoorState(door.systemHash)
+
                 if door.open then
                     if state ~= STATE_OPEN_FORCED then
                         DoorSystemSetDoorState(door.systemHash, STATE_OPEN_FORCED, true, true)
@@ -345,7 +355,7 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         end
     end
     ProfilerExitScope()
-    return isInteracting
+    return isInteracting, doorCount
 end
 
 RegisterNetEvent('demmylock:lock')
@@ -384,9 +394,9 @@ RegisterNetEvent('demmylock:lock-state')
 AddEventHandler ('demmylock:lock-state', function(lockState)
     gotLockState = true
     for areaName, areaData in pairs(lockState) do
-        for lockName, lockState in pairs(areaData) do
+        for lockName, state in pairs(areaData) do
             if LOCKS[areaName] and LOCKS[areaName][lockName] then
-                LOCKS[areaName][lockName].locked = lockState
+                LOCKS[areaName][lockName].locked = state
             end
         end
     end
@@ -394,15 +404,15 @@ end)
 
 AddEventHandler('demmylock:enter-area', function(areaName)
     withModel(CONFIG.keypad, function()
-        for doorName, doorData in pairs(LOCKS[areaName]) do
-            if doorData.keypads then
-                for _, keypad in ipairs(doorData.keypads) do
+        for lockName, lockData in pairs(LOCKS[areaName]) do
+            if lockData.keypads then
+                for _, keypad in ipairs(lockData.keypads) do
                     local object
                     if keypad.door then
-                        local door = doorData.doors[keypad.door]
+                        local door = lockData.doors[keypad.door]
                         object = CreateObjectNoOffset(CONFIG.keypad, door.coords + keypad.offset, false, false, false)
 
-                        local doorObject = getDoorObject(door) --GetClosestObjectOfType(door.coords, 0.5, door.model, false, false, false)
+                        local doorObject = getDoorObject(door)
                         if DoesEntityExist(doorObject) then
                             AttachEntityToEntity(
                                 object,
@@ -428,10 +438,10 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                     keypad.object = object
                 end
             end
-            if doorData.doors then
-                for index,door in ipairs(doorData.doors) do
+            if lockData.doors then
+                for index,door in ipairs(lockData.doors) do
                     if not door.systemHash then
-                        door.systemHash = GetHashKey(areaName..'_'..doorName..'_'..index)
+                        door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
                     end
                     if not IsDoorRegisteredWithSystem(door.systemHash) then
                         AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
@@ -449,15 +459,15 @@ AddEventHandler('demmylock:enter-area', function(areaName)
 end)
 
 AddEventHandler('demmylock:exit-area', function(areaName)
-    for doorName, doorData in pairs(LOCKS[areaName]) do
-        if doorData.keypads then
-            for _, keypad in ipairs(doorData.keypads) do
+    for lockName, lockData in pairs(LOCKS[areaName]) do
+        if lockData.keypads then
+            for _, keypad in ipairs(lockData.keypads) do
                 DeleteObject(keypad.object)
                 keypad.object = nil
             end
         end
-        if doorData.doors then
-            for _, door in ipairs(doorData.doors) do
+        if lockData.doors then
+            for _, door in ipairs(lockData.doors) do
                 RemoveDoorFromSystem(door.systemHash)
             end
         end
@@ -535,62 +545,18 @@ Citizen.CreateThread(function()
         local ped = PlayerPedId()
         local myLocation = GetEntityCoords(ped)
         local isInteracting = IsKeypadShown()
+        doorCountThisFrame = 0
         for areaName, state in pairs(inArea) do
             if state and LOCKS[areaName] then
                 for lockName, data in pairs(LOCKS[areaName]) do
-                    isInteracting = handleLock(myLocation, areaName, lockName, data, isInteracting)
+                    isInteracting, doorCount = handleLock(myLocation, areaName, lockName, data, isInteracting)
+                    doorCountThisFrame = doorCountThisFrame + doorCount
                 end
             end
+        end
+        if doorCountThisFrame > 20 then
+            debugText(myLocation, 'High door count: '..doorCountThisFrame..'/20')
         end
         Citizen.Wait(0)
     end
 end)
-
-for locationName, locationData in pairs(LOCKS) do
-    local center = vector3(0,0,0)
-    local itemCount = 0
-    for lockName, lockData in pairs(locationData) do
-        if lockData.doors then
-            for _, door in pairs(lockData.doors) do
-                itemCount = itemCount + 1
-                center = center + door.coords
-            end
-        end
-        if lockData.keypads then
-            for _, keypad in pairs(lockData.keypads) do
-                if keypad.coords then
-                    itemCount = itemCount + 1
-                    center = center + keypad.coords
-                end
-            end
-        end
-    end
-    if itemCount > 0 then
-        center = center / itemCount
-        CENTERS[locationName] = center
-    end
-end
-for locationName, locationData in pairs(LOCKS) do
-    local maxDistance = 0
-    for lockName, lockData in pairs(locationData) do
-        if lockData.doors then
-            for _, door in pairs(lockData.doors) do
-                local distance = #( door.coords - CENTERS[locationName] )
-                if distance > maxDistance then
-                    maxDistance = distance
-                end
-            end
-        end
-        if lockData.keypads then
-            for _, keypad in pairs(lockData.keypads) do
-                if keypad.coords then
-                    local distance = #( keypad.coords - CENTERS[locationName] )
-                    if distance > maxDistance then
-                        maxDistance = distance
-                    end
-                end
-            end
-        end
-    end
-    SIZES[locationName] = maxDistance + CONFIG.range.areaMargin
-end

@@ -15,7 +15,7 @@ CONFIG = {
     doorSpeed = 1.0,
     fadeTime = 300,
     range = {
-        areaMargin = 100.0,
+        areaMargin = 50.0,
         interact = 1.0,
     },
 }

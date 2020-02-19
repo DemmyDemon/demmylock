@@ -6,6 +6,10 @@
 
 This documentation *assumes* you know the basics of editing `.lua` and `.json` files. The syntax of such files is not explained here, but you might be able to guess what to do based on the examples. Your server will not explode from you experimenting a little, but you do run the risk of *breaking the locks*, meaning all locked doors *stay frozen in place* and all unlocked doors *are open to everyone*. It is highly recommended to play around with this on your test server before actually using it in production.
 
+## Limitations
+
+Right now, only 20 doors can be loaded at a time, even if they are in different defined "areas" in demmylock. This is being looked into, and will likely be overcome soon.
+
 ## Support
 
 Absolutely no support what so ever is given for this resource. If you have an issue with it you are invited to create an issue here on GitHub, but there are absolutely no guarantees that I will do anything about it. "How do I..." issues may be closed without comment.
@@ -86,18 +90,18 @@ In [the configuration file](config.lua), you can mess around with a few settings
 The actual lock definition is really fiddly. I mean, surprisingly fiddly and complicated.  
 I highly recommend using some kind of tool to aid you in this. Personally, I make my own tools, so for this I use [DemmyCam](https://github.com/DemmyDemon/demmycam) to do this. I've built "modes" into it that greatly simplifies this work.
 
-Lock definition is done in [locks.lua](locks.lua)
+Lock definition is done in [the locks directory](locks/place_lock_files_here.md).
 
 ### Overall structure
 
+To define new locks, you create a new file in [the locks directory](locks/place_lock_files_here.md) and populate it with one or more `AddLocks` statements.
+
 ```lua
-LOCKS = {
-    ['Area name'] = {
-        ['Lock name'] = {
-            -- Lock specification goes here
-        },
+AddLocks('Area name',{
+    ['Lock name'] = {
+        -- Lock specification goes here
     },
-}
+})
 ```
 The area name is never shown to the user, but it's very important when looking up if the code is correct! More on the codes in the [Defining codes](#defining-codes) section.
 
@@ -107,19 +111,17 @@ The area name is never shown to the user, but it's very important when looking u
 A simple lock is a lock that has a keypad on the wall and a single regular swinging door.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Simple lock'] = {
-            locked = true,
-            doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434)},
-            },
-            keypads = {
-                {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
-            },
+AddLocks('Example',{
+    ['Simple lock'] = {
+        locked = true,
+        doors = {
+            {model=854291622,coords=vector3(346.774, -584.002, 43.434)},
+        },
+        keypads = {
+            {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
         },
     },
-}
+})
 ```
 
 The `locked` bit is simply the state you want the lock to be in when the resource starts.  
@@ -153,19 +155,17 @@ These keypads move with the door, so I call them `dynamic keypads`.
 Again, I want to stress that this is very fiddly to do manually, and you probably want [DemmyCam](https://github.com/DemmyDemon/demmycam) to help you out. Seriously, this is fiddly enough to manually adjust after placing *with* `demmycam`, so doing it without is just going to frustrate you.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Keypad-on-door lock'] = {
-            locked = true,
-            doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
-            },
-            keypads = {
-                {door=1,offset=vector3(-1.172, -0.042, -0.127),rot=vector3(0,0,0)},
-            },
+AddLocks('Example', {
+    ['Keypad-on-door lock'] = {
+        locked = true,
+        doors = {
+            {model=854291622,coords=vector3(346.774, -584.002, 43.434)},
+        },
+        keypads = {
+            {door=1,offset=vector3(-1.172, -0.042, -0.127),rot=vector3(0,0,0)},
         },
     },
-}
+})
 ```
 Here we use the exact same `doors` section, so see above for that part. What has changed is how `keypads` is defined.
 | Property | Type    | What it means |
@@ -181,20 +181,18 @@ In this example, there is only one keypad, but typically you want one on either 
 Sometimes it's so important that a door is locked that you don't want to risk forgetting to lock it. That's why *automatic relocking* is supported. Simply add a `relock = 5000` to the lock specification, and it will lock again after 5000 *milliseconds*.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Simple lock'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
-            },
-            keypads = {
-                {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
-            },
+AddLocks('Example', {
+    ['Simple lock'] = {
+        locked = true,
+        relock = 5000,
+        doors = {
+            {model=854291622,coords=vector3(346.774, -584.002, 43.434)},
+        },
+        keypads = {
+            {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
         },
     },
-}
+})
 ```
 Of course, that number can be anything you want. It is not possible to lock the door prematurely, so very long relock times are not recommended.
 
@@ -203,20 +201,18 @@ Of course, that number can be anything you want. It is not possible to lock the 
 Sometimes it's not enough to just have the door be unlocked. You want it to be actually propped open! To do this, simply add the openness ration you want it at. This ranges from `-1.0` to `1.0`, which are completely open in different directions.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Simple lock'] = {
-            locked = true,
-            relock = 5000,
-            doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434),open=1.0},
-            },
-            keypads = {
-                {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.0, 0.0, -20.0)},
-            },
+AddLocks('Example',{
+    ['Simple lock'] = {
+        locked = true,
+        relock = 5000,
+        doors = {
+            {model=854291622,coords=vector3(346.774, -584.002, 43.434),open=1.0},
+        },
+        keypads = {
+            {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.0, 0.0, -20.0)},
         },
     },
-}
+})
 ```
 
 **Note** that almost every time, a double door set will be opposite of eachother if you want them to open the same way. One at `-1.0` and the other at `1.0`.
@@ -234,23 +230,21 @@ The whole idea behind teleporting locks is to attach a door in one section of th
 This is also why it's possible to set a teleporting lock with *multiple destinations!* First, though, let's look at a basic teleporter.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Server farm'] = {
-            locked = true,
-            teleport = {
-                {
-                    coords=vector3(2154.875,2921.012,-81.076),
-                    heading=-90.0, 
-                    ipl='xm_x17dlc_int_placement_interior_5_x17dlc_int_facility2_milo_',
-                },
-            },
-            keypads = {
-                {coords=vector3(107.7, -1090.454, 29.830),rot=vector3(0.008, -0.048, 160.019)},
+AddLocks('Example',
+    ['Server farm'] = {
+        locked = true,
+        teleport = {
+            {
+                coords=vector3(2154.875,2921.012,-81.076),
+                heading=-90.0, 
+                ipl='xm_x17dlc_int_placement_interior_5_x17dlc_int_facility2_milo_',
             },
         },
+        keypads = {
+            {coords=vector3(107.7,-1090.454,29.830),rot=vector3(0,0,160)},
+        },
     },
-}
+})
 ```
 
 **Note:  There is no `doors` section when there is a `teleport` section! The two will conflict.**
@@ -274,35 +268,34 @@ After entering the correct code, **anyone** can step through the teleporter by j
 You can specify *multiple* teleport destinations, and what code is used will determine which is used. You can also use `locked = false` to make a teleporter always be active, but then you will also need to specify what destination to use as it can't use a code to figure that out. Let's use our server room example again, but this time with an always-open exit teleporter.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Server farm'] = {
-            locked = true,
-            teleport = {
-                {
-                    coords=vector3(2154.875,2921.012,-81.076),
-                    heading=-90.0,
-                    ipl='xm_x17dlc_int_placement_interior_5_x17dlc_int_facility2_milo_',
-                },
-            },
-            keypads = {
-                {coords=vector3(107.7, -1090.454, 29.830),rot=vector3(0.008, -0.048, 160.019)},
+AddLocks('Example', {
+    ['Server farm'] = {
+        locked = true,
+        teleport = {
+            {
+                coords=vector3(2154.875,2921.012,-81.076),
+                heading=-90.0,
+                ipl='xm_x17dlc_int_placement_interior_5_x17dlc_int_facility2_milo_',
             },
         },
-    },
-    ['Inside server farm'] = {
-        ['Use elevator'] = {
-            locked = false,
-            destination = 1,
-            teleport = {
-                {coords=vector3(109.465, -1090.326, 29.302),heading=20.0},
-            },
-            keypads = {
-                {coords=vector3(2156.355, 2922.228, -80.610),rot=vector3(0.000, 0.000, 31.961)},
-            },
+        keypads = {
+            {coords=vector3(107.7, -1090.454, 29.830),rot=vector3(0.008, -0.048, 160.019)},
         },
     },
-}
+})
+AddLocks('Inside server farm', {
+    ['Use elevator'] = {
+        locked = false,
+        destination = 1,
+        teleport = {
+            {coords=vector3(109.465, -1090.326, 29.302),heading=20.0},
+        },
+        keypads = {
+            {coords=vector3(2156.355, 2922.228, -80.610),rot=vector3(0.000, 0.000, 31.961)},
+        },
+    },
+})
+
 ```
 
 **IMPORTANT NOTE:** It might be tempting to put both the teleporter and the return teleporter in the same `area`. That is to say, put the return teleporter in the `Example` area here. Don't do this. It will create an absurdly large `area` to include both places, and that will cost a lot more resources than is needed to waste. This is absolutely fine for short hops (such as through a door that naturally leads to the other side of the same wall), but for very long teleports this makes the area *very* large, and potentially *always active*.
@@ -313,98 +306,88 @@ Teleporters always close automatically after the time specified in [the configur
 
 ## Defining codes
 
-Code locks are entirely useless if there are no codes. If you don't specify any codes, then any code entered is, by definition, *wrong*. The codes are in a separate file called [codes.json](codes.json). Because the entire [locks.lua](locks.lua) file is transmitted to the client, it's silly to have the codes in there. A techsavvy user would have no trouble at all just opening the resource up and reading the codes. The way this is organized, the `codes.json` file never leaves the server.
+Code locks are entirely useless if there are no codes. If you don't specify any codes, then any code entered is, by definition, *wrong*. The codes are in a separate directory called [codes/](codes/place_code_files_here.md). Because the entire [locks/](locks/place_lock_files_here.md) directory is transmitted to the client, it's silly to have the codes in there. A techsavvy user would have no trouble at all just opening the resource up and reading the codes. The way this is organized, the codes never leave the server.
 
 ### Yeah yeah, whatever, what do I put in the damn code file?
 
-Assuming you have a `locks.lua` that looks like this...
+Assuming you have a [lock file](locks/place_lock_files_here.md) that looks like this...
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Simple lock'] = {
-            locked = true,
-            doors = {
-                {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
-            },
-            keypads = {
-                {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
-            },
+AddLocks('Example', {
+    ['Simple lock'] = {
+        locked = true,
+        doors = {
+            {model=854291622,coords=vector3(346.774, -584.002, 43.434),heading=340.204},
+        },
+        keypads = {
+            {coords=vector3(348.214, -584.642, 43.650),rot=vector3(0.000, -0.000, -20.000)},
         },
     },
-}
+})
 ```
-...you want a `codes.json` that matches, like so...
+...you want a [code file](codes/place_code_files_here.md) that matches, like so...
 
-```json
-{
-    "Example": {
-        "Simple lock": "1234"
-    }
-}
+```lua
+AddCodes('Example', {
+    ['Simple lock'] = '1234',
+})
 ```
 
 Now anyone can unlock that door by using the code `1234` because `Example` matches the lock's area and `Simple lock` matches the lock's name.
 
-After changing `codes.json`, you don't have to restart the whole resource. You can just issue the command `/reloadlockcodes` to re-read the JSON file.
+After changing locks or codes, you have to restart the resource. This will reset all locks to their default state, so you might want to warn your users if you have to do this while the server is up and running normally.
 
-### Lots of doors with the same code
+### Lots of doors with the same code?
 
-Imagine you have a building with lots of doors in it, and you want them all to have the same code. Then imagine this code leaks out, and you need to change them all. This is very tedious, which is why there is such a thing as a `_default` code. This code applies to all doors that are *not otherwise specified* in that area, except teleporters.
+Imagine you have a building with lots of doors in it, and you want them all to have the same code. Then imagine this code leaks out, and you need to change them all. This is very tedious, which is why there is such a thing as a `_default` code. This code applies to all doors that are *not otherwise specified* in that area, **except** [teleporters](#teleporter-codes-are-strange).
 
-```json
-{
-    "Example": {
-        "Simple lock": "1234",
-        "Another lock": "1234",
-        "Yet another lock": "1234",
-        "How many locks are there?": "1234",
-        "Too damn many" : "1234",
-        "This one is special" : "2468"
-    }
-}
+```lua
+AddCodes('Example', {
+    ['Simple lock'] = '1234',
+    ['Another lock'] = '1234',
+    ['Yet another lock'] = '1234',
+    ['How many locks are there?'] = '1234',
+    ['Too damn many'] = '1234',
+    ['This one is special'] = '2468',
+})
 ```
 ...becomes...
-```json
-{
-    "Example": {
-        "_default": "1234",
-        "This one is special" : "2468"
-    }
-}
+```lua
+AddCodes('Example', {
+    _default = '1234',
+    'This one is special' = '2468',
+})
 ```
 
 ### Group codes
 
-When you use the same code for a bunch of doors, the client has no idea. As mentioned, the `codes.json` file is never sent to the client. This means the user has to enter a different code for all the doors, even though the use the same code on the server side.
+When you use the same code for a bunch of doors, the client has no idea. As mentioned, the code files are never sent to the client. This means the user has to enter a different code for all the doors, even though the use the same code on the server side.
 
 You can tell the client to re-use any *correct code* for a lock in a group on *other locks in the same group* by specifying that is is a `groupcode` lock.
 
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['This lock'] = {
-            locked = true,
-            groupcode = true,
-            doors = {
-                -- You know the drill
-            },
-            keypads = {
-                -- Whatever
-            },
+AddLocks('Example', {
+    ['This lock'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            -- You know the drill
         },
-        ['That lock'] = {
-            locked = true,
-            groupcode = true, -- Same code saved
-            doors = {
-                -- Different doors
-            },
-            keypads = {
-                -- Different keypads
-            },
+        keypads = {
+            -- Whatever
         },
     },
-}
+    ['That lock'] = {
+        locked = true,
+        groupcode = true, -- Same code saved
+        doors = {
+            -- Different doors
+        },
+        keypads = {
+            -- Different keypads
+        },
+    },
+})
 ```
 
 ### Teleporter codes are strange!
@@ -413,31 +396,27 @@ Teleporter codes, even when there is just one destination, are different from re
 
 Let's assume this teleporter exists:
 ```lua
-LOCKS = {
-    ['Example'] = {
-        ['Server farm'] = {
-            locked = true,
-            teleport = {
-                {coords=vector3(2154.875,2921.012,-81.076),heading=-90.0},
-                {coords=vector3(0,0,0),heading=0.0}, -- under the map :O
-            },
-            keypads = {
-                {coords=vector3(107.7, -1090.454, 29.830),rot=vector3(0.008, -0.048, 160.019)},
-            },
+AddLocks('Example', {
+    ['Server farm'] = {
+        locked = true,
+        teleport = {
+            {coords=vector3(2154.875,2921.012,-81.076),heading=-90.0},
+            {coords=vector3(0,0,0),heading=0.0}, -- under the map :O
+        },
+        keypads = {
+            {coords=vector3(107.7, -1090.454, 29.830),rot=vector3(0,0,160)},
         },
     },
 }
 ```
 ...then the code looks like this...
-```json
-{
-    "Example": {
-        "Server farm": ["1234", "2468"]
-    }
-}
+```lua
+AddCodes('Example',{
+    ['Server farm'] = {'1234', '2468'},
+})
 ```
 
-See those brackets? They indicate that it's a teleporter code. If you walk up to that teleporter and use the code `1234`, which is *the first code*, then you will go to *the first teleporter destination*. If you use the code `2468`, you will go to *the second teleporter destination*.
+See those curly brackets? They indicate that it's a teleporter code set. If you walk up to that teleporter and use the code `1234`, which is *the first code*, then you will go to *the first teleporter destination*. If you use the code `2468`, which is *the second code*, you will go to *the second teleporter destination*.
 
 ## Did I miss anything?
 
