@@ -41,6 +41,7 @@ function ProfilerEnterScope()
 end
 
 function debugText(where, what)
+    ProfilerEnterScope('demmylock:debugText')
     SetDrawOrigin(where)
     BeginTextCommandDisplayText('STRING')
     SetTextCentre(true)
@@ -50,6 +51,7 @@ function debugText(where, what)
     AddTextComponentSubstringPlayerName(tostring(what))
     EndTextCommandDisplayText(0.0, 0.0)
     ClearDrawOrigin()
+    ProfilerExitScope()
 end
 
 function adjustRatio(target, current)
@@ -82,6 +84,34 @@ function getDoorObject(doorData)
     return doorData.doorObject
 end
 
+function handleDoorRange(door, pedLocation)
+    ProfilerEnterScope('demmylock:handleDoorRange')
+    if not door.systemHash then
+        return false
+    end
+
+    local distance = #(door.coords - pedLocation)
+    if door.keepLoaded or distance < CONFIG.range.doorLoad then
+        if not IsDoorRegisteredWithSystem(door.systemHash) then
+            AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
+                false,
+                true, -- Force closed when locked?
+                true
+            )
+        end
+    else
+        if IsDoorRegisteredWithSystem(door.systemHash) then
+            RemoveDoorFromSystem(door.systemHash)
+        end
+        ProfilerExitScope()
+        return false
+    end
+
+    ProfilerExitScope()
+    return true
+
+end
+
 function handleLock(pedLocation, areaName, lockName, data, isInteracting)
     ProfilerEnterScope('demmylock:handleLock')
     local doorCount = 0
@@ -93,32 +123,24 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         if data.doors then
             for index, door in ipairs(data.doors) do
                 
-                doorCount = doorCount + 1
+                local relevant = handleDoorRange(door, pedLocation)
+                if relevant then
+                    
+                    doorCount = doorCount + 1
 
-                if not door.systemHash then
-                    door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
-                end
+                    local state = DoorSystemGetDoorState(door.systemHash)
 
-                if not IsDoorRegisteredWithSystem(door.systemHash) then
-                    debugText(door.coords, 'DOOR ERROR~n~'..areaName..'/'..lockName)
-                    AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
-                        false,
-                        true, -- Force closed when locked?
-                        true
-                    )
-                end
+                    if state ~= STATE_LOCKED then
+                        DoorSystemSetDoorState(door.systemHash, STATE_LOCKED, true, true)
+                        debugText(door.coords,state)
+                    end
 
-                local state = DoorSystemGetDoorState(door.systemHash)
-
-                if state ~= STATE_LOCKED then
-                    DoorSystemSetDoorState(door.systemHash, STATE_LOCKED, true, true)
-                end
-
-                local ratio = DoorSystemGetOpenRatio(door.systemHash)
-                local adjusted = adjustRatio(0.0, ratio)
-                if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
-                    door.wasAdjusted = adjusted
-                    DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
+                    local ratio = DoorSystemGetOpenRatio(door.systemHash)
+                    local adjusted = adjustRatio(0.0, ratio)
+                    if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
+                        door.wasAdjusted = adjusted
+                        DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
+                    end
                 end
             end
         end
@@ -152,37 +174,26 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         if data.doors then
             for index, door in ipairs(data.doors) do
 
-                doorCount = doorCount + 1
+                local relevant = handleDoorRange(door, pedLocation)
 
-                if not door.systemHash then
-                    door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
-                end
-
-                if not IsDoorRegisteredWithSystem(door.systemHash) then
-                    debugText(door.coords, 'DOOR ERROR')
-                    AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
-                        false,
-                        true, -- Force closed when locked?
-                        false
-                    )
-                end
-
-                local state = DoorSystemGetDoorState(door.systemHash)
-
-                if door.open then
-                    if state ~= STATE_OPEN_FORCED then
-                        DoorSystemSetDoorState(door.systemHash, STATE_OPEN_FORCED, true, true)
-                    end
-                    
-                    local ratio = DoorSystemGetOpenRatio(door.systemHash)
-                    local adjusted = adjustRatio(door.open, ratio)
-                    if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
-                        door.wasAdjusted = adjusted
-                        DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
-                    end
-                else
-                    if state ~= STATE_OPEN then
-                        DoorSystemSetDoorState(door.systemHash, STATE_OPEN, true, true)
+                if relevant then
+                    doorCount = doorCount + 1
+                    local state = DoorSystemGetDoorState(door.systemHash)
+                    if door.open then
+                        if state ~= STATE_OPEN_FORCED then
+                            DoorSystemSetDoorState(door.systemHash, STATE_OPEN_FORCED, true, true)
+                        end
+                        
+                        local ratio = DoorSystemGetOpenRatio(door.systemHash)
+                        local adjusted = adjustRatio(door.open, ratio)
+                        if not door.wasAdjusted or door.wasAdjusted ~= adjusted then
+                            door.wasAdjusted = adjusted
+                            DoorSystemSetOpenRatio(door.systemHash, adjusted, false, true)
+                        end
+                    else
+                        if state ~= STATE_OPEN then
+                            DoorSystemSetDoorState(door.systemHash, STATE_OPEN, true, true)
+                        end
                     end
                 end
             end
@@ -443,7 +454,7 @@ AddEventHandler('demmylock:enter-area', function(areaName)
                     if not door.systemHash then
                         door.systemHash = GetHashKey(areaName..'_'..lockName..'_'..index)
                     end
-                    if not IsDoorRegisteredWithSystem(door.systemHash) then
+                    if door.keepLoaded and not IsDoorRegisteredWithSystem(door.systemHash) then
                         AddDoorToSystem(door.systemHash, door.model, door.coords.x, door.coords.y, door.coords.z,
                             false,
                             true, -- Force closed when locked?
@@ -468,7 +479,9 @@ AddEventHandler('demmylock:exit-area', function(areaName)
         end
         if lockData.doors then
             for _, door in ipairs(lockData.doors) do
-                RemoveDoorFromSystem(door.systemHash)
+                if IsDoorRegisteredWithSystem(door.systemHash) then
+                    RemoveDoorFromSystem(door.systemHash)
+                end
             end
         end
     end
@@ -486,7 +499,9 @@ AddEventHandler('onResourceStop', function(resoureName)
                     end
                     if data.doors then
                         for _, door in ipairs(data.doors) do
-                            RemoveDoorFromSystem(door.systemHash)
+                            if IsDoorRegisteredWithSystem(door.systemHash) then
+                                RemoveDoorFromSystem(door.systemHash)
+                            end
                         end
                     end
                 end

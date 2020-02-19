@@ -149,7 +149,6 @@ AddLocks('Sjukhuset', {
             {coords=vector3(340.387, -587.323, 43.454),rot=vector3(0.000, -0.000, -20.000)},
         },
     },
-    --[[
     ['Intensivavdelning'] = {
         locked = true,
         groupcode = true,
@@ -173,5 +172,4 @@ AddLocks('Sjukhuset', {
             {coords=vector3(308.625, -570.0, 43.47),rot=vector3(0.000, -0.000, 160.000)},
         },
     },
-    --]]
 })
