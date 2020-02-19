@@ -3,8 +3,8 @@ AddLocks('Gentlemen',{
         locked = true,
         groupcode = true,
         doors = {
-            {model=546378757,coords=vector3(-137.799, 973.709, 236.114),open=-1.0,keploaded=true},
-            {model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),open=1.0,keploaded=true},
+            {model=546378757,coords=vector3(-137.799, 973.709, 236.114),open=-1.0,keeploaded=true},
+            {model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),open=1.0,keeploaded=true},
         },
         keypads = {
             {coords=vector3(-132.547, 971.055, 236.0),rot=vector3(0.0, 0.0, -24.388)},
