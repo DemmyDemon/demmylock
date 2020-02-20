@@ -72,11 +72,7 @@ function AddLocks(area, locks)
         LOCKS[area][name] = data
     end
     if IsDuplicityVersion() then
-        if doorCount > 20 then
-            Citizen.Trace('High door count warning for Demmylock area '..area..': '..doorCount..'/20 doors!\n')
-        else
-            Citizen.Trace('Demmylock added '..added..' locks with '..doorCount..' doors to '..area..'\n')
-        end
+        Citizen.Trace('Demmylock added '..added..' locks with '..doorCount..' doors to '..area..'\n')
     else
         CalculateSizeAndCenter(area)
     end
