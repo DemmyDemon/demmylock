@@ -17,7 +17,7 @@ AddLocks('Tvättstugan', {
             {coords=vector3(833.162, -1168.575, 25.268),heading=63.248},
         },
         keypads = {
-            {coords=vector3(1137.629, -3199.448, -39.548),rot=vector3(0.000, -0.000, 180.000)},
+            {coords=vector3(1137.229, -3199.448, -39.548),rot=vector3(0.000, -0.000, 180.000)},
         },
     },
 })
