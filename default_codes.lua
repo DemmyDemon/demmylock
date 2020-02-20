@@ -11,6 +11,12 @@ AddCodes('Gentlemen', {
     ['Isboxen'] = '*44#',
     ['Kontoret'] = '1881',
 })
+AddCodes('Lost MC',{
+    _default = '1212',
+    ['Grinden'] = '1234',
+    ['Till verkstaden'] = {'1212'},
+    ['Till klubben'] = {'1212'},
+})
 AddCodes('Mekonomen', {_default = '1993'})
 AddCodes('Playboy Perimeter', {_default = '#999'})
 AddCodes('Sjukhuset', {_default = '112#'})
