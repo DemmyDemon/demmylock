@@ -28,6 +28,11 @@ AddCodes('Mission Row', {
     ['Vapenlager'] = '#99#',
     ['Bevisförvar'] = '1243',
 })
+AddCodes('Playboy Mansion', {
+    _default='9181',
+    ['Stuvad kanin'] = '2619',
+    ['Kontoret'] = '7331',
+})
 AddCodes('Playboy Perimeter', {_default = '#999'})
 AddCodes('Sheriff Paleto', {_default='1191'})
 AddCodes('Sheriff Sandy', {_default='1911'})

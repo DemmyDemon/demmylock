@@ -55,3 +55,123 @@ AddLocks('Playboy Perimeter',{
         },
     },
 })
+AddLocks('Playboy Mansion',{
+    ['Huvudingången'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=1033441082,coords=vector3(-1535.985, 130.470, 57.751)},
+        },
+        keypads = {
+            {coords=vector3(-1537.488, 131.547, 57.669),rot=vector3(0.011, 0.004, -42.912)},
+            {coords=vector3(-1537.262, 131.678, 57.873),rot=vector3(0.000, -0.000, 137.000)},
+        }
+    },
+    ['Terrassen'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-1563640173,coords=vector3(-1523.062, 143.653, 55.809)},
+        },
+        keypads = {
+            {coords=vector3(-1521.859, 142.701, 56.100),rot=vector3(-0.004, 0.010, 136.962)},
+            {coords=vector3(-1521.913, 142.448, 56.100),rot=vector3(0.004, 0.002, -43.038)},
+        },
+    },
+    ['Stuvad kanin'] = {
+        locked = true,
+        relock = 10000,
+        doors = {
+            {model=988364535,coords=vector3(-1526.287, 118.156, 55.736)},
+            {model=-1141522158,coords=vector3(-1527.282, 119.082, 55.742)},
+        },
+        keypads = {
+            {coords=vector3(-1521.501, 117.533, 55.236),rot=vector3(-0.000, 0.000, 47.000)},
+            {coords=vector3(-1529.413, 116.489, 55.859),rot=vector3(0.000, 0.000, -132.845)},
+        }
+    },
+    ['Potatiskällare'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-710818483,coords=vector3(-1522.081, 122.245, 50.282)},
+        },
+        keypads = {
+            {coords=vector3(-1523.340, 123.111, 50.430),rot=vector3(0.000, -0.000, -42.877)},
+            {coords=vector3(-1523.066, 123.431, 50.447),rot=vector3(0.000, -0.000, 137.058)},
+        },
+    },
+    ['Verkstad'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-710818483,coords=vector3(-1525.482, 116.570, 50.282)},
+        },
+        keypads = {
+            {coords=vector3(-1524.631, 117.798, 50.244),rot=vector3(0.000, -0.000, -132.921)},
+            {coords=vector3(-1524.308, 117.502, 50.244),rot=vector3(0.000, 0.000, 47.039)},
+        },
+    },
+    ['Idiotförvar'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-710818483,coords=vector3(-1527.631, 120.349, 50.283)},
+        },
+        keypads = {
+            {coords=vector3(-1528.503, 119.176, 50.220),rot=vector3(0.000, 0.000, 47.043)},
+            {coords=vector3(-1528.733, 119.383, 50.220),rot=vector3(0.000, -0.000, -132.957)},
+        },
+    },
+    ['Sidoingång'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-1563640173,coords=vector3(-1500.401, 104.144, 55.809)},
+        },
+        keypads = {
+            {coords=vector3(-1501.353, 102.938, 55.696),rot=vector3(0.000, -0.000, 45.788)},
+            {coords=vector3(-1501.478, 103.047, 56.041),rot=vector3(0.000, -0.000, -133.000)},
+        },
+    },
+    ['Viknällare'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=262671971,coords=vector3(-1510.653, 109.289, 52.392)},
+        },
+        keypads = {
+            {coords=vector3(-1511.492, 108.256, 52.618),rot=vector3(0.000, 0.000, 47.000)},
+            {coords=vector3(-1511.656, 108.396, 52.630),rot=vector3(0.000, -0.000, -133.000)},
+        },
+    },
+    ['Skräpkällare'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=262671971,coords=vector3(-1508.163, 106.966, 52.392)},
+        },
+        keypads = {
+            {coords=vector3(-1509.149, 106.077, 52.607),rot=vector3(0.000, -0.000, -133.000)},
+            {coords=vector3(-1509.029, 105.950, 52.621),rot=vector3(0.000, 0.000, 47.000)},
+        },
+    },
+    ['Orgierummet'] = {
+        locked = true,
+        groupcode = true,
+        keypads = {
+            {coords=vector3(-1509.113, 109.769, 52.615),rot=vector3(0.000, -0.000, -43.000)},
+        }
+    },
+    ['Kontoret'] = {
+        locked = true,
+        doors = {
+            {model=262671971,coords=vector3(-1507.240, 119.400, 55.823)},
+            {model=262671971,coords=vector3(-1505.647, 117.883, 55.823)},
+        },
+        keypads = {
+            {coords=vector3(-1507.483, 119.478, 56.072),rot=vector3(0.000, -0.000, -43.000)},
+            {coords=vector3(-1507.329, 119.643, 56.088),rot=vector3(0.014, -0.035, 137.000)},
+        },
+    },
+})
