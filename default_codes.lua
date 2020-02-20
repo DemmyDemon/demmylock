@@ -20,3 +20,6 @@ AddCodes('Lost MC',{
 AddCodes('Mekonomen', {_default = '1993'})
 AddCodes('Playboy Perimeter', {_default = '#999'})
 AddCodes('Sjukhuset', {_default = '112#'})
+AddCodes('Tvättaren', {
+    ['Ingång'] = {'*69*'},
+})
