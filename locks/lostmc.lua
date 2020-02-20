@@ -54,6 +54,17 @@ AddLocks('Lost MC', {
             {coords=vector3(984.606, -93.921, 74.994),rot=vector3(-0.000, 0.000, 132.652)},
         },
     },
+    ['Snickarboa'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-1023447729,coords=vector3(983.867, -142.641, 74.423)},
+        },
+        keypads = {
+            {coords=vector3(983.056, -143.900, 74.414),rot=vector3(0.013, -0.007, 56.461)},
+            {coords=vector3(983.000, -143.868, 74.414),rot=vector3(-0.013, -0.024, -123.539)},
+        },
+    },
     ['Till verkstaden'] = {
         locked = true,
         groupcode = true,
