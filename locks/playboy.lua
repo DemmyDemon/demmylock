@@ -3,7 +3,7 @@ AddLocks('Playboy Perimeter',{
         locked = true,
         groupcode = true,
         doors = {
-            {model=-2125423493,coords=vector3(-1474.131, 68.388, 52.526),open=-1.0},
+            {model=-2125423493,coords=vector3(-1474.131, 68.388, 52.526),open=-1.0,keeploaded=true},
         },
         keypads = {
             {coords=vector3(-1467.704, 68.563, 53.653),rot=vector3(0.012, 0.265, -175.035)},
@@ -14,7 +14,7 @@ AddLocks('Playboy Perimeter',{
         locked = true,
         groupcode = true,
         doors = {
-            {model=-2125423493,coords=vector3(-1616.233, 79.781, 60.775),open=-1.0},
+            {model=-2125423493,coords=vector3(-1616.233, 79.781, 60.775),open=-1.0,keeploaded=true},
         },
         keypads = {
             {coords=vector3(-1611.336, 75.693, 61.969),rot=vector3(0.016, 0.004, -30.984)},
