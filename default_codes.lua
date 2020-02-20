@@ -40,3 +40,13 @@ AddCodes('Sjukhuset', {_default = '112#'})
 AddCodes('Tvättaren', {
     ['Ingång'] = {'*69*'},
 })
+
+-- Adding *new* codes below here, just to be nice to Mike. HI MIKE!
+-- I'll put dates on it so it's easy to see what was added when.
+
+-- 2020-02-20
+AddCodes('Madrazo Ranch', {
+    _default='1236',
+    ['Källaren'] = '1247',
+    ['Lagret'] = '1427',
+})
