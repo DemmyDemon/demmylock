@@ -54,6 +54,17 @@ AddLocks('Playboy Perimeter',{
             {coords=vector3(-1434.893, 236.182, 59.834),rot=vector3(0.001, -0.002, 129.468)},
         },
     },
+    ['Grind D'] = {
+        locked = true,
+        groupcode = true,
+        doors = {
+            {model=-1859471240,coords=vector3(-1578.371, 153.207, 58.969)},
+        },
+        keypads = {
+            {coords=vector3(-1579.750, 152.666, 58.435),rot=vector3(-0.021, -0.102, -156.497)},
+            {coords=vector3(-1579.764, 152.585, 58.621),rot=vector3(0.021, -0.004, 23.503)},
+        },
+    },
 })
 AddLocks('Playboy Mansion',{
     ['Huvudingången'] = {
