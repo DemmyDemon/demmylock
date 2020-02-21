@@ -515,4 +515,4 @@ Note that if you *do not* specify a range, the one given in [the configuration](
 
 ## Did I miss anything?
 
-Yeah. Interior prop locks are not documented at all, and I probably forgot at least three important points.
+I probably forgot at least three important points, so feel free to let me know what they are.
