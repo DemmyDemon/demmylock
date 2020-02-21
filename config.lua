@@ -17,6 +17,7 @@ CONFIG = {
     range = {
         areaMargin = 50.0,
         interact = 1.0,
-        doorLoad = 10.0
+        doorLoad = 10.0,
+        vehicleSensor = 5.0,
     },
 }

@@ -50,3 +50,9 @@ AddCodes('Madrazo Ranch', {
     ['Källaren'] = '1247',
     ['Lagret'] = '1427',
 })
+
+-- 2020-02-21
+AddCodes('Bilcenter', {
+    _default = '1277',
+    ['Chefskontoret'] = '1377',
+})

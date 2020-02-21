@@ -2,6 +2,7 @@ AddLocks('Mission Row', {
     ['Porten fram'] = {
         locked = true,
         groupcode = true,
+        relock = 10000,
         doors = {
             {model=725274945,coords=vector3(412.700, -1024.906, 28.336),keeploaded=true,open=1.0},
         },
@@ -9,17 +10,26 @@ AddLocks('Mission Row', {
             {coords=vector3(412.349, -1024.781, 29.281),rot=vector3(-0.000, -0.000, -90.000)},
             {coords=vector3(413.051, -1024.770, 29.288),rot=vector3(0.000, 0.000, 90.000)},
         },
+        vehicleSensors = {
+            {coords=vector3(417.929, -1021.229, 29.042)},
+            {coords=vector3(408.205, -1022.158, 29.363)},
+        },
     },
     ['Porten bak'] = {
         locked = true,
         groupcode = true,
+        relock = 10000,
         doors = {
             {model=-1603817716,coords=vector3(488.895, -1017.212, 27.149),keeploaded=true,open=1.0},
         },
         keypads = {
             {coords=vector3(488.620, -1022.906, 28.500),rot=vector3(0.008, 0.008, -90.000)},
             {coords=vector3(489.150, -1022.898, 28.500),rot=vector3(-0.008, 0.008, 90.000)},
-        }
+        },
+        vehicleSensors = {
+            {coords=vector3(493.911, -1019.691, 27.076)},
+            {coords=vector3(485.783, -1020.508, 26.901)},
+        },
     },
     ['Taket'] = {
         locked = true,

@@ -2,6 +2,7 @@ AddLocks('Playboy Perimeter',{
     ['Huvudporten'] = {
         locked = true,
         groupcode = true,
+        relock = 5000,
         doors = {
             {model=-2125423493,coords=vector3(-1474.131, 68.388, 52.526),open=-1.0,keeploaded=true},
         },
@@ -9,16 +10,25 @@ AddLocks('Playboy Perimeter',{
             {coords=vector3(-1467.704, 68.563, 53.653),rot=vector3(0.012, 0.265, -175.035)},
             {coords=vector3(-1467.732, 67.965, 53.653),rot=vector3(-0.012, 0.000, 4.965)},
         },
+        vehicleSensors = {
+            {coords=vector3(-1470.549, 65.523, 52.209)},
+            {coords=vector3(-1471.488, 73.562, 52.556)},
+        },
     },
     ['Sidoporten'] = {
         locked = true,
         groupcode = true,
+        relock = 5000,
         doors = {
             {model=-2125423493,coords=vector3(-1616.233, 79.781, 60.775),open=-1.0,keeploaded=true},
         },
         keypads = {
             {coords=vector3(-1611.336, 75.693, 61.969),rot=vector3(0.016, 0.004, -30.984)},
             {coords=vector3(-1610.887, 76.130, 61.969),rot=vector3(-0.016, 0.058, 149.016)},
+        },
+        vehicleSensors = {
+            {coords=vector3(-1614.625, 75.433, 60.458)},
+            {coords=vector3(-1614.383, 85.571, 60.718)},
         },
     },
     ['Grind A'] = {

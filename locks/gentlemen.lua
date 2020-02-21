@@ -2,6 +2,7 @@ AddLocks('Gentlemen',{
     ['Porten'] = {
         locked = true,
         groupcode = true,
+        relock = 10000,
         doors = {
             {model=546378757,coords=vector3(-137.799, 973.709, 236.114),open=-1.0,keeploaded=true},
             {model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),open=1.0,keeploaded=true},
@@ -9,6 +10,10 @@ AddLocks('Gentlemen',{
         keypads = {
             {coords=vector3(-132.547, 971.055, 236.0),rot=vector3(0.0, 0.0, -24.388)},
             {coords=vector3(-132.272, 971.607, 236.0),rot=vector3(0.0, 0.0, 164.217)},
+        },
+        vehicleSensors = {
+            {coords=vector3(-136.500, 969.140, 234.880)},
+            {coords=vector3(-133.575, 976.755, 234.879)},            
         },
     },
     ['Huvudingången'] = {

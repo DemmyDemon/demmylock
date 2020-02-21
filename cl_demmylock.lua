@@ -3,7 +3,6 @@ AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Upprepa kod ~n~~INPUT_CHA
 AddTextEntry('DEMMYLOCK_TELEPORT', '~a~~n~~INPUT_CONTEXT~ Kliv igenom')
 
 local inArea = {}
-local ped = PlayerPedId()
 local lastKey
 local gotLockState = false
 local DEBUGAREAS = false
@@ -11,6 +10,68 @@ local DEBUGAREAS = false
 local STATE_LOCKED = 4
 local STATE_OPEN = 0
 local STATE_OPEN_FORCED = -1
+
+local drivingVehicle = false
+local playerPed = PlayerPedId()
+
+function getLastKey(areaName, lockName)
+    local key
+    if LOCKS[areaName] and LOCKS[areaName][lockName] then
+        
+        if LOCKS[areaName][lockName].lastKey then
+            return LOCKS[areaName][lockName].lastKey
+        end
+
+        local groupcode = LOCKS[areaName][lockName].groupcode
+        if groupcode then
+            if type(groupcode) == 'string' then
+                key = GetResourceKvpString('demmylock:'..areaName..':'..groupcode)
+            else
+                key = GetResourceKvpString('demmylock:'..areaName)
+            end
+        else
+            key = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
+        end
+    end
+
+    if key then
+        LOCKS[areaName][lockName].lastKey = key
+        return key
+    else
+        LOCKS[areaName][lockName].lastKey = ''
+        return ''
+    end
+end
+
+function setLastKey(areaName, lockName, key)
+    if LOCKS[areaName] and LOCKS[areaName][lockName] then
+        local groupcode = LOCKS[areaName][lockName].groupcode
+        LOCKS[areaName][lockName].lastKey = key
+        Citizen.Trace(string.format("%s/%s/%s = %s\n", areaName, lockName, groupcode, key))
+        if groupcode then
+            if type(groupcode) == 'string' then
+                if key then
+                    SetResourceKvp('demmylock:'..areaName..':'..groupcode, key)
+                else
+                    DeleteResourceKvp('demmylock:'..areaName..':'..groupcode, key)
+                end
+            else
+                if key then
+                    SetResourceKvp('demmylock:'..areaName, key)
+                else
+                    DeleteResourceKvp('demmylock:'..areaName)
+                end
+            end
+        else
+            if key then
+                SetResourceKvp('demmylock:'..areaName..':'..lockName, key)
+            else
+                DeleteResourceKvp('demmylock:'..areaName..':'..lockName)
+            end
+        end
+
+    end
+end
 
 function withModel(hash, callback)
     if not HasModelLoaded(hash) then
@@ -147,25 +208,27 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         end
         if data.entitySets then
             local refresh = false
-            local interior = GetInteriorAtCoords(data.entitySets.interior)
+            if not data.entitySets.interiorID then
+                data.entitySets.interiorID = GetInteriorAtCoords(data.entitySets.interior)
+            end
             if data.entitySets.open then
                 for _, name in ipairs(data.entitySets.open) do
-                    if IsInteriorEntitySetActive(interior, name) then
-                        DeactivateInteriorEntitySet(interior, name)
+                    if IsInteriorEntitySetActive(data.entitySets.interiorID, name) then
+                        DeactivateInteriorEntitySet(data.entitySets.interiorID, name)
                         refresh = true
                     end
                 end
             end
             if data.entitySets.locked then
                 for _, name in ipairs(data.entitySets.locked) do
-                    if not IsInteriorEntitySetActive(interior, name) then
-                        ActivateInteriorEntitySet(interior, name)
+                    if not IsInteriorEntitySetActive(data.entitySets.interiorID, name) then
+                        ActivateInteriorEntitySet(data.entitySets.interiorID, name)
                         refresh = true
                     end
                 end
             end
             if refresh then
-                RefreshInterior(interior)
+                RefreshInterior(data.entitySets.interiorID)
             end
         end
         ProfilerExitScope()
@@ -236,6 +299,38 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
         ProfilerExitScope()
     end
 
+    if drivingVehicle and data.locked and data.vehicleSensors then
+
+        for _, sensor in ipairs(data.vehicleSensors) do
+
+            if DEBUGAREAS then
+                warningText(sensor.coords,'SENSOR')
+                bubble(sensor.coords, CONFIG.range.vehicleSensor)
+            end
+
+            local range = sensor.range
+            if not range then
+                range = CONFIG.range.vehicleSensors
+            end
+
+            if #(pedLocation - sensor.coords) <= CONFIG.range.vehicleSensor then
+                if not sensor.tripped then
+                    sensor.tripped = true
+
+                    local key = getLastKey(areaName, lockName)
+                    if key and string.len(key) > 0 then
+                        TriggerServerEvent('demmylock:entered-pin', areaName, lockName, key, false)
+                    end
+                end
+            else
+                if sensor.tripped then
+                    sensor.tripped = nil
+                end
+            end
+        end
+
+    end
+
     if data.keypads then
         for _,keypad in ipairs(data.keypads) do
             ProfilerEnterScope('demmylock:handleLock:keypads')
@@ -304,18 +399,11 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                     ProfilerEnterScope('demmylock:handleLocks:interact')
                     isInteracting = true
 
-                    if not lastKey then
-                        if data.groupcode then
-                            lastKey = GetResourceKvpString('demmylock:'..areaName)
-                        else
-                            lastKey = GetResourceKvpString('demmylock:'..areaName..':'..lockName)
-                        end
-                        if not lastKey then
-                            lastKey = ''
-                        end
+                    if not data.lastKey then
+                        getLastKey(areaName, lockName)
                     end
 
-                    if lastKey and string.len(lastKey) > 0 then
+                    if data.lastKey and string.len(data.lastKey) > 0 then
                         BeginTextCommandDisplayHelp('DEMMYLOCK_REUSE')
                     else
                         BeginTextCommandDisplayHelp('DEMMYLOCK_INTERACT')
@@ -324,10 +412,10 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                     EndTextCommandDisplayHelp(0, false, false, 0)
 
                     if IsControlJustPressed(0, 51) then
-                        if lastKey and string.len(lastKey) > 0 and not IsControlPressed(0, 19) then
-                            TriggerServerEvent('demmylock:entered-pin', areaName, lockName, lastKey, not data.locked)
+                        if data.lastKey and string.len(data.lastKey) > 0 and not IsControlPressed(0, 19) then
+                            TriggerServerEvent('demmylock:entered-pin', areaName, lockName, data.lastKey, not data.locked)
                         else
-                            ShowKeypad(areaName, lockName, lastKey, not data.locked)
+                            ShowKeypad(areaName, lockName, data.lastKey, not data.locked)
                         end
                     end
                     ProfilerExitScope()
@@ -338,7 +426,6 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                     EndTextCommandDisplayHelp(0, false, false, 0)
                     if IsControlJustPressed(0, 51) then
                         DoScreenFadeOut(CONFIG.fadeTime)
-                        local ped = PlayerPedId()
                         Citizen.Trace('Teleporting to '..tostring(target.coords)..'\n')
                         if target.ipl then
                             if not IsIplActive(target.ipl) then
@@ -353,15 +440,13 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                         end
                         local camHeading = GetGameplayCamRelativeHeading()
                         local camPitch = GetGameplayCamRelativePitch()
-                        SetEntityCoordsNoOffset(ped, target.coords, false, false, false)
-                        SetEntityHeading(ped, target.heading)
+                        SetEntityCoordsNoOffset(playerPed, target.coords, false, false, false)
+                        SetEntityHeading(playerPed, target.heading)
                         SetGameplayCamRelativeHeading(camHeading)
                         SetGameplayCamRelativePitch(camPitch, 1.0)
                         DoScreenFadeIn(CONFIG.fadeTime)
                     end
                 end
-            elseif lastKey then
-                lastKey = nil
             end
             ProfilerExitScope()
         end
@@ -375,6 +460,11 @@ AddEventHandler ('demmylock:lock', function(areaName, lockName)
     if LOCKS[areaName] and LOCKS[areaName][lockName] then
         LOCKS[areaName][lockName].locked = true
         LOCKS[areaName][lockName].destination = null
+        if LOCKS[areaName][lockName].vehicleSensors then
+            for _,sensor in ipairs(LOCKS[areaName][lockName].vehicleSensors) do
+                sensor.tripped = nil
+            end
+        end
     else
         Citizen.Trace('Lock could not find lock '..tostring(areaName)..'/'..tostring(lockName))
     end
@@ -393,11 +483,7 @@ end)
 RegisterNetEvent('demmylock:wrong-code')
 AddEventHandler ('demmylock:wrong-code', function(areaName, lockName)
     if LOCKS[areaName] and LOCKS[areaName][lockName] then
-        if LOCKS[areaName][lockName].groupcode then
-            DeleteResourceKvp('demmylock:'..areaName)
-        else
-            DeleteResourceKvp('demmylock:'..areaName..':'..lockName)
-        end
+        setLastKey(areaName, lockName, nil)
     end
     lastKey = nil
 end)
@@ -511,6 +597,27 @@ AddEventHandler('onResourceStop', function(resoureName)
     end
 end)
 
+function bubble(center, size, r, g, b, a)
+    DrawMarker(
+        28,
+        center,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        size,
+        size,
+        size,
+        r or 255,
+        g or 128,
+        b or 0,
+        a or 200,
+        false, false, 2, 0, 0, false
+    )
+end
+
 Citizen.CreateThread(function()
     while true do
         if not gotLockState then
@@ -519,21 +626,7 @@ Citizen.CreateThread(function()
         local myLocation = GetFinalRenderedCamCoord()
         for areaName, center in pairs(CENTERS) do
             if DEBUGAREAS then
-                DrawMarker(
-                    28,
-                    center,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    0.0,
-                    SIZES[areaName],
-                    SIZES[areaName],
-                    SIZES[areaName],
-                    255, 128, 0, 200,
-                    false, false, 2, 0, 0, false
-                )
+                bubble(center, SIZES[areaName])
             end
             if #( myLocation - center ) < (SIZES[areaName] or 0) then
                 if not inArea[areaName] then
@@ -548,6 +641,15 @@ Citizen.CreateThread(function()
                 Citizen.Wait(0)
             end
         end
+        playerPed = PlayerPedId()
+
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+        if vehicle ~= 0 then
+            drivingVehicle = ( GetPedInVehicleSeat(vehicle, -1) == playerPed )
+        else
+            drivingVehicle = false
+        end
+
         if DEBUGAREAS then
             Citizen.Wait(0)
         else
@@ -558,8 +660,7 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        local ped = PlayerPedId()
-        local myLocation = GetEntityCoords(ped)
+        local myLocation = GetEntityCoords(playerPed)
         local isInteracting = IsKeypadShown()
         doorCountThisFrame = 0
         for areaName, state in pairs(inArea) do

@@ -20,9 +20,6 @@ function verifyPin(area, lock, pin)
 
 end
 function matchDestination(area, lock, pin)
-    if not CODES then
-        CODES = loadCodes()
-    end
     if CODES and CODES[area] and CODES[area][lock] then
         for destination,code in ipairs(CODES[area][lock]) do
             if pin == code then
