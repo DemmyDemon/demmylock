@@ -1,4 +1,9 @@
 local CODES = {}
+local lockStateCache = nil
+
+function who(sauce)
+    return '['..sauce..' '..GetPlayerName(sauce)..']'
+end
 
 function AddCodes(area, codes)
     if not CODES[area] then
@@ -41,7 +46,7 @@ AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
                 lockStateCache = nil -- void lock cache because we're changing the lock state!
                 lockData.locked = false
                 TriggerClientEvent('demmylock:unlock', -1, area, lock, destination)
-                Citizen.Trace(source..'/'..GetPlayerName(source)..' opened a magic portal from '..area..' '..lock..' to destination '..destination..'\n')
+                log(who(source),'opened a magic portal from',area,'/',lock,'to destination',destination)
             else
                 TriggerClientEvent('demmylock:wrong-code', source, area, lock)
             end
@@ -49,7 +54,7 @@ AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
                 lockStateCache = nil -- void lock cache because we're changing the lock state!
                 lockData.locked = true
                 TriggerClientEvent('demmylock:lock', -1, area, lock)
-                Citizen.Trace('The magic portal from '..area..' '..lock..' has closed.\n')
+                log('The magic portal from',area,'/',lock,'has closed.')
             end)
 
         elseif verifyPin(area, lock, pin) then
@@ -59,20 +64,20 @@ AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
             lockData.locked = locked
             if locked then
                 TriggerClientEvent('demmylock:lock', -1, area, lock)
-                Citizen.Trace(source..'/'..GetPlayerName(source)..' locked '..area..' '..lock..'\n')
+                log(who(source),'locked',area,'/',lock)
             else
                 if lockData.relock then
                     SetTimeout(LOCKS[area][lock].relock, function()
                         if not lockData.locked then
                             lockStateCache = nil
                             lockData.locked = true
-                            Citizen.Trace(area..' '..lock..' was automatically relocked\n')
+                            log(area,'/',lock,'was automatically relocked.')
                             TriggerClientEvent('demmylock:lock', -1, area, lock)
                         end
                     end)
                 end
                 TriggerClientEvent('demmylock:unlock', -1, area, lock)
-                Citizen.Trace(source..'/'..GetPlayerName(source)..' unlocked '..area..' '..lock..'\n')
+                log(who(source),'unlocked',area,'/',lock)
             end
         else
             TriggerClientEvent('demmylock:wrong-code', source, area, lock)
@@ -82,13 +87,13 @@ AddEventHandler ('demmylock:entered-pin', function(area, lock, pin, locked)
     end
 end)
 
-local lockStateCache = nil
 RegisterNetEvent('demmylock:request-lock-state')
 AddEventHandler ('demmylock:request-lock-state', function()
     local source = source
-    -- Citizen.Trace(source..'/'..GetPlayerName(source)..' requests lock state\n')
+
     if lockStateCache then
-        TriggerClientEvent('demmylock:lock-state',source, lockStateCache)
+        log(who(source),'requested lock state, which is cached')
+        TriggerClientEvent('demmylock:lock-state', source, lockStateCache)
         return
     end
 
@@ -99,6 +104,8 @@ AddEventHandler ('demmylock:request-lock-state', function()
             lockState[areaName][lockName] = lockData.locked
         end
     end
+
+    log(who(source),'requested lock state')
     TriggerClientEvent('demmylock:lock-state', source, lockState)
     lockStateCache = lockState
 

@@ -62,7 +62,7 @@ function AddLocks(area, locks)
     local doorCount = 0
     for name, data in pairs(locks) do
         if LOCKS[area][name] then
-            Citizen.Trace('DEMMYLOCK WARNING: Duplicate lock definiton for '..area..'/'..name..'\n')
+            log('WARNING: Duplicate lock definiton for ',area,'/',name)
         else
             if data.doors then
                 doorCount = doorCount + #data.doors
@@ -72,8 +72,31 @@ function AddLocks(area, locks)
         LOCKS[area][name] = data
     end
     if IsDuplicityVersion() then
-        Citizen.Trace('Demmylock added '..added..' locks with '..doorCount..' doors to '..area..'\n')
+        log('Added',added,'locks with',doorCount,'doors to',area)
     else
         CalculateSizeAndCenter(area)
     end
+end
+
+function log (...)
+    local numElements = select('#', ...)
+    local elements = {...}
+    local line
+    local prefix = ''
+    if IsDuplicityVersion() then
+        prefix = '['..os.date("%H:%M:%S")..'] <'..GetCurrentResourceName()..'> '
+    end
+    suffix = '\n'
+
+    for i=1,numElements do
+        local entry = elements[i]
+
+        if line then
+            line = line..' '..tostring(entry)
+        else
+            line = tostring(entry)
+        end
+
+    end
+    Citizen.Trace(prefix..line..suffix)
 end

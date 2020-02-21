@@ -425,7 +425,6 @@ function handleLock(pedLocation, areaName, lockName, data, isInteracting)
                     EndTextCommandDisplayHelp(0, false, false, 0)
                     if IsControlJustPressed(0, 51) then
                         DoScreenFadeOut(CONFIG.fadeTime)
-                        Citizen.Trace('Teleporting to '..tostring(target.coords)..'\n')
                         if target.ipl then
                             if not IsIplActive(target.ipl) then
                                 RequestIpl(target.ipl)
@@ -465,7 +464,7 @@ AddEventHandler ('demmylock:lock', function(areaName, lockName)
             end
         end
     else
-        Citizen.Trace('Lock could not find lock '..tostring(areaName)..'/'..tostring(lockName))
+        log('Lock could not find lock',areaName,'/',lockName)
     end
 end)
 
@@ -475,13 +474,14 @@ AddEventHandler ('demmylock:unlock', function(areaName, lockName, destination)
         LOCKS[areaName][lockName].locked = false
         LOCKS[areaName][lockName].destination = destination
     else
-        Citizen.Trace('Unlock could not find lock '..tostring(areaName)..'/'..tostring(lockName))
+        log('Unlock could not find lock',areaName,'/',lockName)
     end
 end)
 
 RegisterNetEvent('demmylock:wrong-code')
 AddEventHandler ('demmylock:wrong-code', function(areaName, lockName)
     if LOCKS[areaName] and LOCKS[areaName][lockName] then
+        log('Your code for',areaname, lockName, 'was wrong.')
         setLastKey(areaName, lockName, nil)
     end
 end)
@@ -489,6 +489,7 @@ end)
 RegisterNetEvent('demmylock:lock-state')
 AddEventHandler ('demmylock:lock-state', function(lockState)
     gotLockState = true
+    log('Got lock state from server')
     for areaName, areaData in pairs(lockState) do
         for lockName, state in pairs(areaData) do
             if LOCKS[areaName] and LOCKS[areaName][lockName] then
@@ -618,9 +619,16 @@ end
 
 Citizen.CreateThread(function()
     while true do
+
         if not gotLockState then
-            TriggerServerEvent('demmylock:request-lock-state')
+            local now = GetGameTimer()
+            if not requestedLockState or requestedLockState < now - 5000 then
+                requestedLockState = GetGameTimer()
+                log('Requesting lock state from server')
+                TriggerServerEvent('demmylock:request-lock-state')
+            end
         end
+
         local myLocation = GetFinalRenderedCamCoord()
         for areaName, center in pairs(CENTERS) do
             if DEBUGAREAS then
