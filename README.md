@@ -4,7 +4,7 @@
 
 ## Assumptions
 
-This documentation *assumes* you know the basics of editing `.lua` and `.json` files. The syntax of such files is not explained here, but you might be able to guess what to do based on the examples. Your server will not explode from you experimenting a little, but you do run the risk of *breaking the locks*, meaning all locked doors *stay frozen in place* and all unlocked doors *are open to everyone*. It is highly recommended to play around with this on your test server before actually using it in production.
+This documentation *assumes* you know the basics of editing `.lua` files. The syntax of such files is not explained here, but you might be able to guess what to do based on the examples. Your server will not explode from you experimenting a little, but you do run the risk of *breaking the locks*, meaning all locked doors *stay frozen in place* and all unlocked doors *are open to everyone*. It is highly recommended to play around with this on your test server before actually using it in production.
 
 It is also assumed that you are familiar with [the vector3 data type](https://docs.fivem.net/docs/scripting-reference/runtimes/lua/functions/vector3/).
 
