@@ -3,7 +3,6 @@ AddTextEntry('DEMMYLOCK_REUSE', '~a~~n~~INPUT_CONTEXT~ Upprepa kod ~n~~INPUT_CHA
 AddTextEntry('DEMMYLOCK_TELEPORT', '~a~~n~~INPUT_CONTEXT~ Kliv igenom')
 
 local inArea = {}
-local lastKey
 local gotLockState = false
 local DEBUGAREAS = false
 
@@ -485,7 +484,6 @@ AddEventHandler ('demmylock:wrong-code', function(areaName, lockName)
     if LOCKS[areaName] and LOCKS[areaName][lockName] then
         setLastKey(areaName, lockName, nil)
     end
-    lastKey = nil
 end)
 
 RegisterNetEvent('demmylock:lock-state')
