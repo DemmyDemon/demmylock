@@ -79,15 +79,17 @@ Yes, I am aware that the red and green are the exact same hue, and might be hard
 
 In [the configuration file](config.lua), you can mess around with a few settings.
 
-| Setting          | What it changes                          |
-|------------------|------------------------------------------|
-| keypad           | What prop is used for the keypad object. |
-| indicator        | What marker is used to show the state of the lock. |
-| teleportTime     | How many *milliseconds* a door stays open for teleportation. |
-| doorSpeed        | How quickly a propped-open door swings closed when it is locked. |
-| fadeTime         | The number of *milliseconds* it takes for the screen to fade in or out when teleporting. |
-| range.areaMargin | How far outside a grouping of locks you can be before they pop up. |
-| range.interact   | How far you can be from a keypad and still interact with it. |
+| Setting             | What it changes                          |
+|---------------------|------------------------------------------|
+| keypad              | What prop is used for the keypad object. |
+| indicator           | What marker is used to show the state of the lock. |
+| teleportTime        | How many *milliseconds* a door stays open for teleportation. |
+| doorSpeed           | How quickly a propped-open door swings closed when it is locked. |
+| fadeTime            | The number of *milliseconds* it takes for the screen to fade in or out when teleporting. |
+| range.areaMargin    | How far outside a grouping of locks you can be before they pop up. |
+| range.interact      | How far you can be from a keypad and still interact with it. |
+| range.doorLoad      | How far from a door does it get loaded into the Door System |
+| range.vehicleSensor | The range of a [vehicle sensor](#vehicle-sensors), if nothing is specified. |
 
 ## Defining locks
 
@@ -444,6 +446,72 @@ AddCodes('Example',{
 ```
 
 See those curly brackets? They indicate that it's a teleporter code set. If you walk up to that teleporter and use the code `1234`, which is *the first code*, then you will go to *the first teleporter destination*. If you use the code `2468`, which is *the second code*, you will go to *the second teleporter destination*.
+
+### Entity sets
+
+Only very few locks make sense as an entity set lock. I currently know of only one: The rear gate at Simeon's car dealership.
+
+```lua
+AddLocks('Simeon', {
+    ['Back gate'] = {
+        locked = true,
+        entitySets = {
+            interior = vector3(-29.936, -1088.536, 26.422),
+            open = {'shutter_open'},
+            locked = {'shutter_closed'},
+        },
+        keypads = {
+            {coords=vector3(-32.108, -1085.724, 26.876),rot=vector3(0.000, -0.000, -20.242)},
+            {coords=vector3(-31.729, -1085.350, 26.876),rot=vector3(0.028, -0.020, 69.972)},
+        },
+    },
+})
+```
+| Property | Type | What it means |
+|----------|------|---------------|
+| interior | vector3 | Where to sample the interior ID for what interior the entity sets are to be enabled and disabled in. |
+| open     | table | This is a table of strings (just one in the example, but still!) that holds all the items to be enabled when the lock is open. |
+| locked     | table | This is a table of strings that holds all the items to be enabled when the lock is locked. |
+
+**Note** that all entity sets must be in the same interior.  
+**Also note** that any items in the `open` list will be *disabled* when the lock is locked, and any items in the `locked` list will be *disabled* when the lock is open. If either is omitted, this still leaves a useful switch for whatever interior entity set you might want to toggle.
+
+### Vehicle sensors
+
+Sometimes you want a gate to open automagically when you approach it by car. This saves you from getting out and walking over to the keypad, poking in the key and then going back to your car.
+
+This works absolutely best combiled with [automatic relocking](#automatic-relocking), as the sensors only open the gate, they don't close it again.
+
+Note that the lock will only open if you have previously unlocked that lock (or, if it has a [group code](#group-codes), a lock in that group). The first time you use it, you still have to actually input they code at the keypad.
+
+Let's have a look at an example:
+
+```lua
+AddLocks('Sensor demo',{
+    ['Gate'] = {
+        locked = true,
+        relock = 10000,
+        doors = {
+            {model=546378757,coords=vector3(-137.799, 973.709, 236.114),open=-1.0,keeploaded=true},
+            {model=-1249591818,coords=vector3(-132.789, 971.500, 236.114),open=1.0,keeploaded=true},
+        },
+        keypads = {
+            {coords=vector3(-132.547, 971.055, 236.0),rot=vector3(0.0, 0.0, -24.388)},
+            {coords=vector3(-132.272, 971.607, 236.0),rot=vector3(0.0, 0.0, 164.217)},
+        },
+        vehicleSensors = {
+            {coords=vector3(-136.500, 969.140, 234.880)},
+            {coords=vector3(-133.575, 976.755, 234.879)},
+        },
+    },
+})
+```
+| Property | Type | What it means |
+|---------|---------|----------|
+| coords | vector3 | The sensor's location. |
+| range | Float | Entirely optional range of the sensor. |
+
+Note that if you *do not* specify a range, the one given in [the configuration](#configuration). As with keypads, it makes sense to have one on each side of the gate.
 
 ## Did I miss anything?
 
